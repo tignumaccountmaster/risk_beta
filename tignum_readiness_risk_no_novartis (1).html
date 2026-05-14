@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIGNUM — Readiness Risk Beta · Data</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#0a0a08;--paper:#f5f2eb;--bone:#e8e3d8;
+  --gold:#b8935a;--gl:#d4af7a;--rust:#8b3a2a;--sage:#4a5c4e;
+  --mist:#c8cfc9;--accent:#1a2f1e;
+  --bp:#2E6FAB;--dc:#8b3a2a;--cm:#4a5c4e;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:'DM Mono',monospace;font-weight:300;overflow-x:hidden;cursor:none}
+.cursor{position:fixed;width:8px;height:8px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transition:transform .15s ease;mix-blend-mode:multiply}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid var(--gold);border-radius:50%;pointer-events:none;z-index:9998;opacity:.6}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 3rem;display:flex;justify-content:space-between;align-items:center;mix-blend-mode:multiply}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ink)}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{font-size:1.04rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink);text-decoration:none;opacity:.6;transition:opacity .2s}
+.nav-links a:hover{opacity:1}
+section{min-height:100vh;position:relative;overflow:hidden}
+
+/* HERO */
+#hero{display:grid;grid-template-rows:1fr auto;background:var(--ink);color:var(--paper)}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 80% 50%,rgba(184,147,90,.08) 0%,transparent 70%),radial-gradient(ellipse 40% 60% at 10% 80%,rgba(74,92,78,.15) 0%,transparent 60%)}
+.hero-grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(245,242,235,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(245,242,235,.04) 1px,transparent 1px);background-size:80px 80px}
+.hero-content{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:12rem 3rem 4rem;max-width:1200px}
+.hero-eyebrow{font-size:1.04rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:2.5rem;opacity:0;animation:fadeUp .8s ease .3s forwards}
+.hero-headline{font-family:'Cormorant Garamond',serif;font-size:clamp(3.5rem,7vw,7rem);font-weight:300;line-height:1.02;letter-spacing:-.02em;color:var(--paper);max-width:900px;opacity:0;animation:fadeUp .9s ease .5s forwards}
+.hero-headline em{font-style:italic;color:var(--gl)}
+.hero-sub{margin-top:3rem;font-size:1.0rem;letter-spacing:.08em;line-height:1.8;max-width:480px;color:var(--bone);opacity:0;animation:fadeUp .9s ease .7s forwards}
+.hero-meta{position:relative;z-index:2;border-top:1px solid rgba(245,242,235,.1);display:grid;grid-template-columns:repeat(4,1fr);padding:2rem 3rem}
+.hero-stat{padding:1.5rem 0;border-right:1px solid rgba(245,242,235,.08);opacity:0;animation:fadeUp .8s ease 1s forwards}
+.hero-stat:last-child{border-right:none}
+.hero-stat-num{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;color:var(--gl);display:block}
+.hero-stat-label{font-size:1.0rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.6;margin-top:.3rem;display:block}
+.hero-stat-sub{font-size:1.04rem;color:rgba(200,207,201,.4);margin-top:.25rem;line-height:1.4}
+.scroll-cue{position:absolute;bottom:7rem;right:3rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;opacity:0;animation:fadeIn 1s ease 1.5s forwards}
+.scroll-cue span{font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;color:var(--paper);writing-mode:vertical-rl}
+.scroll-line{width:1px;height:60px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollPulse 2s ease-in-out infinite}
+
+/* SHARED SECTION PARTS */
+.section-label{font-size:1.0rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:3rem;display:flex;align-items:center;gap:1rem}
+.section-label::before{content:'';width:2rem;height:1px;background:var(--gold);display:inline-block}
+.section-headline{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,4vw,4.5rem);font-weight:300;line-height:1.08;letter-spacing:-.01em}
+.section-headline em{font-style:italic;color:var(--gold)}
+
+/* THRESHOLD SECTION */
+#threshold{background:var(--paper);padding:8rem 3rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start;min-height:auto}
+.threshold-states{display:flex;flex-direction:column;gap:2px;margin-top:2rem}
+.threshold-state{border:1px solid var(--bone);padding:1.8rem 2rem;position:relative;overflow:hidden;transition:border-color .3s;background:white}
+.threshold-state::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;transform:scaleY(0);transform-origin:bottom;transition:transform .4s ease}
+.threshold-state.dim::before{background:var(--rust)}
+.threshold-state.mult::before{background:var(--sage)}
+.threshold-state:hover::before{transform:scaleY(1)}
+.threshold-state:hover{border-color:var(--gold)}
+.ts-val{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;line-height:1}
+.ts-val.dim{color:var(--rust)}.ts-val.mult{color:var(--sage)}
+.ts-label{font-size:1.0rem;letter-spacing:.15em;text-transform:uppercase;margin-top:.3rem;opacity:.5}
+.ts-desc{font-size:.86rem;line-height:1.8;margin-top:.8rem;opacity:.65}
+.threshold-right{padding-top:5rem}
+.blind-spot-box{background:var(--ink);color:var(--paper);padding:3rem;margin-top:3rem}
+.blind-spot-box p{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;font-style:italic;line-height:1.5;color:var(--gl)}
+.blind-spot-box .attribution{margin-top:1.5rem;font-size:1.0rem;letter-spacing:.15em;text-transform:uppercase;opacity:.4}
+.param-table{margin-top:3rem}
+.param-row{display:grid;grid-template-columns:1fr auto;padding:1.2rem 0;border-bottom:1px solid var(--bone);align-items:center;gap:1rem}
+.param-row:last-child{border-bottom:none}
+.param-name{font-size:.86rem;opacity:.55;letter-spacing:.05em}
+.param-val{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--gold);text-align:right}
+
+/* DASHBOARD */
+#dashboard{background:var(--accent);color:var(--paper);padding:8rem 3rem;min-height:auto}
+#dashboard .section-label{color:var(--gl)}
+#dashboard .section-label::before{background:var(--gl)}
+.dashboard-header{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:end;margin-bottom:5rem}
+.dashboard-headline{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,4vw,4rem);font-weight:300;line-height:1.08;color:var(--paper)}
+.dashboard-headline em{color:var(--gl);font-style:italic}
+.dashboard-sub{font-size:.86rem;line-height:1.9;opacity:.55}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:4rem}
+.kpi{border:1px solid rgba(245,242,235,.08);padding:2rem 1.8rem;position:relative;overflow:hidden;transition:border-color .3s}
+.kpi:hover{border-color:var(--gold)}
+.kpi-value{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;color:var(--gl);line-height:1;display:block}
+.kpi-label{font-size:1.04rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.55;margin-top:.5rem;display:block;line-height:1.5}
+.chart-area{margin-bottom:3rem}
+.chart-area+.chart-area{border-top:1px solid rgba(245,242,235,.08);padding-top:3rem}
+.chart-title{font-size:1.0rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem}
+.chart-wrap{position:relative}
+.chart-wrap.h300{height:300px}.chart-wrap.h240{height:240px}.chart-wrap.h220{height:220px}
+.charts-two{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:3rem;border-top:1px solid rgba(245,242,235,.08);padding-top:3rem}
+.charts-three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3rem;margin-top:3rem;border-top:1px solid rgba(245,242,235,.08);padding-top:3rem}
+
+/* YEAR TABLE */
+.year-table-wrap{margin-top:3rem;border-top:1px solid rgba(245,242,235,.08);padding-top:3rem;overflow-x:auto}
+table.ytbl{width:100%;border-collapse:collapse;font-size:1.0rem}
+table.ytbl th{padding:.8rem 1rem;text-align:right;font-size:.86rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(200,207,201,.4);border-bottom:1px solid rgba(245,242,235,.1);font-family:'DM Mono',monospace;font-weight:400}
+table.ytbl th:first-child{text-align:left}
+table.ytbl td{padding:.9rem 1rem;text-align:right;border-bottom:1px solid rgba(245,242,235,.05);color:rgba(200,207,201,.75);font-family:'DM Mono',monospace}
+table.ytbl td:first-child{text-align:left;color:var(--gl);font-weight:500}
+table.ytbl tr:hover td{background:rgba(184,147,90,.04)}
+.src-pill{display:inline-block;padding:.2rem .6rem;font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;border-radius:2px}
+.src-l{background:rgba(184,147,90,.15);color:var(--gold)}
+.src-d{background:rgba(46,111,171,.15);color:#6aabf0}
+.src-n{background:rgba(74,148,100,.15);color:#7ac49a}
+.beta-up{color:#7ac49a}.beta-dn{color:rgba(184,64,64,.9)}
+
+/* METHODOLOGY */
+#methodology{background:var(--paper);padding:8rem 3rem;min-height:auto}
+.method-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:6rem;margin-top:4rem}
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:grid;grid-template-columns:4rem 1fr;gap:1.5rem;padding:2rem 0;border-bottom:1px solid var(--bone);cursor:default;transition:background .2s}
+.step:hover{background:rgba(184,147,90,.03);margin:0 -1rem;padding-left:1rem;padding-right:1rem}
+.step-num{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gold);line-height:1;padding-top:.2rem}
+.step-title{font-size:1.04rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem}
+.step-formula{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:300;margin-bottom:.5rem}
+.step-desc{font-size:1.0rem;line-height:1.8;opacity:.6}
+.weights-col{display:flex;flex-direction:column;gap:2px;align-self:start;position:sticky;top:5rem}
+.weight-card{padding:2.5rem;border:1px solid var(--bone);transition:border-color .3s,background .3s;position:relative;overflow:hidden}
+.weight-card:hover{background:white;border-color:var(--gold)}
+.weight-card::after{content:attr(data-weight);position:absolute;right:1.5rem;bottom:-1.5rem;font-family:'Cormorant Garamond',serif;font-size:8rem;font-weight:300;color:rgba(184,147,90,.06);line-height:1;pointer-events:none;transition:color .3s}
+.weight-card:hover::after{color:rgba(184,147,90,.12)}
+.weight-tag{display:inline-block;font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;padding:.25rem .7rem;margin-bottom:1rem;color:white}
+.weight-tag.bp{background:var(--bp)}.weight-tag.dc{background:var(--rust)}.weight-tag.cm{background:var(--sage)}
+.weight-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;margin-bottom:.8rem}
+.weight-desc{font-size:1.0rem;line-height:1.85;opacity:.65}
+
+/* FINDINGS */
+#findings{background:var(--bone);padding:8rem 3rem;min-height:auto}
+.findings-header{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:end;margin-bottom:5rem}
+.findings-headline{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,4vw,4rem);font-weight:300;line-height:1.08}
+.findings-headline em{font-style:italic;color:var(--gold)}
+.why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px}
+.why-card{background:var(--paper);padding:3rem;position:relative;overflow:hidden;transition:background .3s}
+.why-card:hover{background:white}
+.why-card::after{content:attr(data-num);position:absolute;right:2rem;bottom:-1rem;font-family:'Cormorant Garamond',serif;font-size:8rem;font-weight:300;color:rgba(184,147,90,.05);line-height:1;pointer-events:none;transition:color .3s}
+.why-card:hover::after{color:rgba(184,147,90,.1)}
+.why-card-tag{display:inline-block;font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:white;padding:.25rem .7rem;margin-bottom:1.2rem}
+.why-num{font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:300;line-height:1;margin-bottom:.5rem}
+.why-num.rust{color:var(--rust)}.why-num.sage{color:var(--sage)}.why-num.gold{color:var(--gold)}
+.why-card-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;margin-bottom:1rem}
+.why-card-body{font-size:1.0rem;line-height:1.85;opacity:.65}
+
+/* PHYSIOLOGY */
+#physiology{background:var(--ink);color:var(--paper);padding:8rem 3rem;min-height:auto}
+#physiology .section-label{color:var(--gold)}
+#physiology .section-label::before{background:var(--gold)}
+.physio-header{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:end;margin-bottom:5rem}
+.physio-headline{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,4vw,4rem);font-weight:300;line-height:1.08;color:var(--paper)}
+.physio-headline em{color:var(--gl);font-style:italic}
+.corr-stats{display:flex;flex-direction:column;gap:2px}
+.corr-stat{border:1px solid rgba(245,242,235,.08);padding:1.8rem 2rem;position:relative;overflow:hidden;transition:border-color .3s;display:grid;grid-template-columns:10rem 1fr;gap:2rem;align-items:start}
+.corr-stat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);transform:scaleY(0);transform-origin:bottom;transition:transform .4s ease}
+.corr-stat:hover::before{transform:scaleY(1)}
+.corr-stat:hover{border-color:var(--gold)}
+.corr-r{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gl);line-height:1}
+.corr-r.neg{color:#c05040}
+.corr-detail .corr-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--paper);margin-bottom:.4rem}
+.corr-detail .corr-p{font-size:1.0rem;letter-spacing:.1em;opacity:.4;margin-bottom:.4rem}
+.corr-detail .corr-desc{font-size:1.04rem;line-height:1.7;opacity:.55}
+.sfs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:3rem}
+.sfs-card{border:1px solid rgba(245,242,235,.08);padding:2rem 2.5rem;display:grid;grid-template-columns:3rem 1fr;gap:1.5rem;align-items:start;transition:background .3s}
+.sfs-card:hover{background:rgba(184,147,90,.04)}
+.sfs-letter{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gold);line-height:1;padding-top:.2rem}
+.sfs-type{font-size:1.0rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gl);margin-bottom:.4rem}
+.sfs-beta{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;line-height:1;margin-bottom:.3rem}
+.sfs-beta.above{color:#4a9463}.sfs-beta.below{color:#c05040}
+.sfs-state{font-size:1.0rem;letter-spacing:.1em;opacity:.4}
+.sfs-n{font-size:1.04rem;opacity:.3;margin-top:.3rem}
+
+/* CTA */
+#cta{background:var(--ink);padding:10rem 3rem;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center;min-height:70vh}
+#cta .bg-text{position:absolute;font-family:'Cormorant Garamond',serif;font-size:20vw;font-weight:300;color:rgba(245,242,235,.02);letter-spacing:-.05em;pointer-events:none;white-space:nowrap;top:50%;left:50%;transform:translate(-50%,-50%)}
+.cta-content{position:relative;z-index:2;max-width:700px}
+.cta-eyebrow{font-size:1.0rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem}
+.cta-headline{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,5vw,5rem);font-weight:300;line-height:1.08;color:var(--paper);margin-bottom:1.5rem}
+.cta-headline em{font-style:italic;color:var(--gl)}
+.cta-sub{font-size:.86rem;line-height:1.9;opacity:.45;color:var(--paper);margin-bottom:3rem}
+.cta-btn{display:inline-block;border:1px solid var(--gold);color:var(--gold);padding:1rem 2.5rem;font-family:'DM Mono',monospace;font-size:1.04rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;transition:all .3s;position:relative;overflow:hidden}
+.cta-btn::before{content:'';position:absolute;inset:0;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .3s ease;z-index:-1}
+.cta-btn:hover{color:var(--ink)}.cta-btn:hover::before{transform:scaleX(1)}
+footer{background:var(--ink);border-top:1px solid rgba(245,242,235,.06);padding:2rem 3rem;display:flex;justify-content:space-between;align-items:center}
+footer span{font-size:1.0rem;letter-spacing:.1em;opacity:.3;color:var(--paper)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:.4}}
+@keyframes scrollPulse{0%,100%{opacity:.4}50%{opacity:1}}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}.reveal-delay-4{transition-delay:.4s}
+
+@media(max-width:900px){
+  #threshold,.dashboard-header,.method-grid,.findings-header,.physio-header{grid-template-columns:1fr;gap:3rem}
+  .hero-meta{grid-template-columns:repeat(2,1fr)}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .why-grid,.charts-two,.charts-three,.sfs-grid{grid-template-columns:1fr}
+  nav{padding:1.5rem}.nav-links{display:none}
+  section{padding:5rem 1.5rem!important}
+  .corr-stat{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <div class="nav-logo">TIGNUM</div>
+  <ul class="nav-links">
+    <li><a href="#business-case">Business Case</a></li>
+    <li><a href="#threshold">The Beta</a></li>
+    <li><a href="#dashboard">Data</a></li>
+    <li><a href="#methodology">Method</a></li>
+    <li><a href="#findings">Findings</a></li>
+    <li><a href="#physiology">Physiology</a></li>
+    <li><a href="#sql">SQL</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ───────────────────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-lines"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Readiness Risk Beta · Data Overview · 2026</p>
+    <h1 class="hero-headline">One number. Two states.<br><em>Fifteen years</em> of proof.</h1>
+    <p class="hero-sub">The Readiness Risk Beta tells you whether a leadership team is multiplying performance or quietly draining it — drawn from 2.3 million data points across 53,441 assessments. Not a wellness score. A signal.</p>
+  </div>
+  <div class="hero-meta">
+    <div class="hero-stat">
+      <span class="hero-stat-num">2.3M</span>
+      <span class="hero-stat-label">Data Points</span>
+      <div class="hero-stat-sub">Individual assessment answers since 2011</div>
+    </div>
+    <div class="hero-stat" style="padding-left:2rem">
+      <span class="hero-stat-num">82.9%</span>
+      <span class="hero-stat-label">Improved Readiness Risk</span>
+      <div class="hero-stat-sub">Engagement window · 30–90 days</div>
+    </div>
+    <div class="hero-stat" style="padding-left:2rem">
+      <span class="hero-stat-num">53,441</span>
+      <span class="hero-stat-label">Assessments measured</span>
+      <div class="hero-stat-sub">38,686 unique leaders · 2011–2026</div>
+    </div>
+    <div class="hero-stat" style="padding-left:2rem">
+      <span class="hero-stat-num">15</span>
+      <span class="hero-stat-label">Years of data</span>
+      <div class="hero-stat-sub">Legacy · DB · New Prindex · 3 generations</div>
+    </div>
+  </div>
+  <div class="scroll-cue"><div class="scroll-line"></div><span>Scroll</span></div>
+</section>
+
+<!-- ── EXCURSION: BUSINESS CASE ─────────────────────────────────────────── -->
+<section id="business-case" style="background:var(--bone);padding:8rem 3rem;min-height:auto">
+  <div class="section-label reveal">Excursion — Business Case</div>
+  <h2 class="section-headline reveal reveal-delay-1" style="max-width:720px">Human Performance Beta as a <em>risk management instrument.</em></h2>
+  <p class="reveal reveal-delay-2" style="font-size:1.04rem;line-height:1.9;opacity:.7;max-width:620px;margin-top:1.5rem;margin-bottom:5rem">Risk management means identifying and analysing risk in an investment — and every project a client runs is an investment. It evaluates both upsides (gains) and downsides (leaks) against project goals. At its core, risk is the probability of a loss, measured using statistical methods. One of those methods is called Beta.</p>
+  <!-- IMPACT FORMULA -->
+  <div class="reveal" style="margin-bottom:5rem;padding:4rem 3rem;background:var(--ink);color:var(--paper);text-align:center;position:relative;overflow:hidden">
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(245,242,235,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(245,242,235,.03) 1px,transparent 1px);background-size:60px 60px"></div>
+    <div style="position:relative;z-index:2">
+      <div style="font-size:.86rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:2.5rem">The TIGNUM Impact Formula</div>
+      <div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:1.5rem;margin-bottom:2.5rem">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.5rem);font-weight:300;color:var(--paper)">Impact</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.5rem);font-weight:300;color:var(--gold)">=</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,5vw,4.5rem);font-weight:300;color:rgba(245,242,235,.25)">(</span>
+        <div style="text-align:center">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.4rem,3vw,2.2rem);font-weight:300;font-style:italic;color:var(--gl);line-height:1.15">Functional<br>Readiness</div>
+        </div>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:300;color:var(--gold)">+</span>
+        <div style="text-align:center">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.4rem,3vw,2.2rem);font-weight:300;font-style:italic;color:var(--gl);line-height:1.15">Role<br>Readiness</div>
+        </div>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,5vw,4.5rem);font-weight:300;color:rgba(245,242,235,.25)">)</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:300;color:var(--gold)">×</span>
+        <div style="text-align:center;padding:.6rem 1.5rem;border:1px solid var(--gold);background:rgba(184,147,90,.08)">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.4rem,3vw,2.2rem);font-weight:300;font-style:italic;color:var(--gold);line-height:1.15">Readiness<br>Risk Beta</div>
+        </div>
+      </div>
+      <p style="font-size:1.04rem;line-height:1.9;opacity:.45;max-width:580px;margin:0 auto">A leader can have deep functional expertise and a well-defined role — but if the Beta is below 1.0, both are diminished. The Beta is not a wellness score. It is the multiplier on everything else a leader brings to a critical moment.</p>
+    </div>
+  </div>
+
+
+
+  <!-- TWO COLUMN: FINANCE BETA vs TIGNUM BETA -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:5rem">
+    <div style="background:var(--paper);padding:3rem;border:1px solid var(--bone)">
+      <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mist);margin-bottom:1.5rem">In finance</div>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;margin-bottom:1.5rem;line-height:1.2">Beta measures volatility<br>relative to the market</h3>
+      <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem">
+        <div style="display:flex;align-items:baseline;gap:1rem;padding:.8rem 0;border-bottom:1px solid var(--bone)">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--gold);width:3.5rem;flex-shrink:0">β = 1</span>
+          <span style="font-size:1.04rem;opacity:.65;line-height:1.7">The market. The benchmark. Exactly average volatility. All investments are measured against this.</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:1rem;padding:.8rem 0;border-bottom:1px solid var(--bone)">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--rust);width:3.5rem;flex-shrink:0">β &gt; 1</span>
+          <span style="font-size:1.04rem;opacity:.65;line-height:1.7">More volatile than the market. Higher potential return — but higher risk of loss.</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:1rem;padding:.8rem 0">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--sage);width:3.5rem;flex-shrink:0">β &lt; 1</span>
+          <span style="font-size:1.04rem;opacity:.65;line-height:1.7">Less volatile than the market. Lower risk — but also lower upside potential.</span>
+        </div>
+      </div>
+      <p style="font-size:.86rem;line-height:1.8;opacity:.55;padding-top:1rem;border-top:1px solid var(--bone)">The two risk types: <strong style="opacity:.8">Systematic risk</strong> affects everyone — a pandemic, a financial crisis, a market shock. <strong style="opacity:.8">Unsystematic risk</strong> is specific to a company or team — poor leadership, misaligned culture, performance drain.</p>
+    </div>
+    <div style="background:var(--ink);color:var(--paper);padding:3rem">
+      <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem">The TIGNUM inversion</div>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--paper);margin-bottom:1.5rem;line-height:1.2">Human Performance Beta<br>runs the other way</h3>
+      <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem">
+        <div style="display:flex;align-items:baseline;gap:1rem;padding:.8rem 0;border-bottom:1px solid rgba(245,242,235,.08)">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--gold);width:3.5rem;flex-shrink:0">β = 1</span>
+          <span style="font-size:1.04rem;opacity:.6;line-height:1.7">The performance benchmark. The minimum standard for a team entering a critical project.</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:1rem;padding:.8rem 0;border-bottom:1px solid rgba(245,242,235,.08)">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:#4a9463;width:3.5rem;flex-shrink:0">β &gt; 1</span>
+          <span style="font-size:1.04rem;opacity:.6;line-height:1.7">Multiplying. The team generates more capacity than it consumes. This is where you want to be.</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:1rem;padding:.8rem 0">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:#c05040;width:3.5rem;flex-shrink:0">β &lt; 1</span>
+          <span style="font-size:1.04rem;opacity:.6;line-height:1.7">Diminishing. The team is a performance liability. Lower beta = higher risk to the project.</span>
+        </div>
+      </div>
+      <p style="font-size:.86rem;line-height:1.8;opacity:.45;padding-top:1rem;border-top:1px solid rgba(245,242,235,.08)">The inversion is intentional and important. In finance, you avoid high beta if you want safety. In human performance, you <em style="color:var(--gl)">pursue</em> high beta. A CFO can hold both concepts simultaneously — they are measuring the same underlying thing (risk relative to a benchmark) from opposite directions.</p>
+    </div>
+  </div>
+
+  <!-- TWO RISK TYPES -->
+  <div style="margin-bottom:5rem">
+    <div class="section-label reveal" style="margin-bottom:2rem">Both risk types, measured</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px">
+      <div style="background:var(--paper);padding:3rem;border:1px solid var(--bone);position:relative;overflow:hidden">
+        <div style="position:absolute;right:2rem;bottom:-1rem;font-family:'Cormorant Garamond',serif;font-size:8rem;font-weight:300;color:rgba(184,147,90,.05);line-height:1;pointer-events:none">S</div>
+        <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:white;display:inline-block;padding:.25rem .7rem;margin-bottom:1.2rem">Systematic Risk</div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;margin-bottom:1rem">Readiness for what nobody sees coming</h3>
+        <p style="font-size:1.04rem;line-height:1.85;opacity:.65">Systematic risk hits everyone simultaneously — a pandemic, a geopolitical shock, a market collapse. The question is not whether it will happen but whether the leadership team has the capacity to adapt when it does.<br><br>The TIGNUM instrument captures this through <strong>agility and adaptability behaviours</strong> — specifically the Daily Challenges and Critical Moments levels, which measure how leaders perform under unexpected constraint and pressure.</p>
+      </div>
+      <div style="background:var(--paper);padding:3rem;border:1px solid var(--bone);position:relative;overflow:hidden">
+        <div style="position:absolute;right:2rem;bottom:-1rem;font-family:'Cormorant Garamond',serif;font-size:8rem;font-weight:300;color:rgba(184,147,90,.05);line-height:1;pointer-events:none">U</div>
+        <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:white;display:inline-block;padding:.25rem .7rem;margin-bottom:1.2rem">Unsystematic Risk</div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;margin-bottom:1rem">Readiness within the team and the project</h3>
+        <p style="font-size:1.04rem;line-height:1.85;opacity:.65">Unsystematic risk is specific to a team or organisation — it can be reduced through deliberate action. This is where TIGNUM operates most directly.<br><br>The instrument captures this through <strong>energy multiplication, performance resilience, and self-observation behaviours</strong> — the dimensions that determine whether a team amplifies or drains collective capacity under project pressure.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE BENCHMARK -->
+  <div style="background:var(--ink);color:var(--paper);padding:4rem">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start">
+      <div>
+        <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;display:flex;align-items:center;gap:.8rem"><span style="width:1.5rem;height:1px;background:var(--gold);display:inline-block"></span>The benchmark</div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--paper);line-height:1.15;margin-bottom:1.5rem">A Prindex score of 62.5%<br>equals a Beta of <em style="color:var(--gl)">1.0.</em></h3>
+        <p style="font-size:1.04rem;line-height:1.9;opacity:.55;margin-bottom:1.5rem">A Prindex score of 62.5% is the expert-defined performance standard — the minimum readiness level for a team entering a critical project. It is not a statistical average. It is a professional judgment about what the work actually requires.</p>
+        <p style="font-size:1.04rem;line-height:1.9;opacity:.55">Under this standard, only <strong style="color:var(--gl)">13.1%</strong> of leaders currently meet or exceed the benchmark on their first assessment. This is intentional — it sets a demanding, aspirational standard that reflects the genuine requirements of high-stakes leadership.</p>
+      </div>
+      <div>
+        <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem;display:flex;align-items:center;gap:.8rem"><span style="width:1.5rem;height:1px;background:var(--gold);display:inline-block"></span>Note on the two standards</div>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <div style="padding:1.5rem;border:1px solid rgba(245,242,235,.08)">
+            <div style="font-size:.60rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gl);margin-bottom:.5rem">Population median (current model)</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;margin-bottom:.5rem">42.2% = β 1.0</div>
+            <div style="font-size:1.0rem;opacity:.45;line-height:1.7">50% of leaders are above, 50% below by definition. Useful for benchmarking individuals against the global population. Does not imply the leader is ready for critical project work.</div>
+          </div>
+          <div style="padding:1.5rem;border:1px solid rgba(184,147,90,.3);background:rgba(184,147,90,.05)">
+            <div style="font-size:.60rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gl);margin-bottom:.5rem">Expert standard (project readiness)</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--gl);margin-bottom:.5rem">62.5% = β 1.0</div>
+            <div style="font-size:1.0rem;opacity:.55;line-height:1.7">13.1% of leaders meet this on first assessment. Sets the bar at what high-stakes project work actually demands. Every team below this standard carries measurable, reducible risk.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVENUE ANGLE -->
+  <div style="margin-top:3rem;padding:3rem;border-left:3px solid var(--gold);background:rgba(184,147,90,.04)">
+    <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem">The commercial implication</div>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;line-height:1.4;max-width:800px;color:var(--ink)">"Every team entering a critical project needs a Beta of 1.0. Below that, the risk is measurable. TIGNUM can reduce it — and measure the reduction."</p>
+    <p style="font-size:1.04rem;line-height:1.9;opacity:.6;max-width:700px;margin-top:1.5rem">If a leadership team's beta is a condition for project approval — or at minimum a risk disclosure item — then measuring and improving it becomes a recurring operational requirement, not a one-time intervention. The beta links human performance directly to project risk governance: a language CFOs, boards, and risk committees already speak.</p>
+  </div>
+</section>
+
+<!-- ── THRESHOLD ──────────────────────────────────────────────────────────── -->
+<section id="threshold">
+  <div>
+    <div class="section-label reveal">01 — The Threshold</div>
+    <h2 class="section-headline reveal reveal-delay-1">Below 1.0, leaders cost more than they <em>produce.</em></h2>
+    <div class="threshold-states">
+      <div class="threshold-state dim reveal reveal-delay-2">
+        <div class="ts-val dim">β &lt; 1.0</div>
+        <div class="ts-label">Diminishing</div>
+        <p class="ts-desc">The leader is consuming more performance capacity than they generate. Decision quality degrades under pressure. The cost to the organisation is invisible — until it materialises in a deal, a decision, or a departure.</p>
+      </div>
+      <div class="threshold-state reveal reveal-delay-3" style="background:var(--bone);border:none;text-align:center;padding:.8rem 2rem">
+        <span style="font-size:1.0rem;letter-spacing:.2em;opacity:.4">— THRESHOLD  1.0 —</span>
+      </div>
+      <div class="threshold-state mult reveal reveal-delay-4">
+        <div class="ts-val mult">β &gt; 1.0</div>
+        <div class="ts-label">Multiplying</div>
+        <p class="ts-desc">The leader generates more performance capacity than they consume. Greater mental agility, faster recalibration under pressure, sustained clarity. They become the energy source for everyone around them — elevating teams, decisions, and every room they walk into.</p>
+      </div>
+    </div>
+  </div>
+  <div class="threshold-right">
+    <div class="section-label reveal">Pre-assessment anchor</div>
+    <p class="reveal reveal-delay-1" style="font-size:1.04rem;line-height:1.9;opacity:.7;margin-bottom:2rem">The 1.0 threshold is the historical median of all 38,686 pre-assessments — the very first assessment each leader ever completes, before any TIGNUM intervention. Crossing 1.0 means moving beyond the global pre-intervention baseline.</p>
+    <p class="reveal reveal-delay-2" style="font-size:1.04rem;line-height:1.9;opacity:.7">A group beta below 1.0 is a measurable statement that this team, at this moment, is operating below the performance median of all leaders TIGNUM has ever measured on their first day.</p>
+    <div class="param-table reveal reveal-delay-3">
+      <div class="param-row">
+        <div class="param-name">Conversion Factor (Score ÷ 2.5)</div>
+        <div class="param-val">2.50</div>
+      </div>
+      <div class="param-row">
+        <div class="param-name">Pre Median Score (1–5 scale)</div>
+        <div class="param-val">2.700</div>
+      </div>
+      <div class="param-row">
+        <div class="param-name">Pre Raw Beta Median</div>
+        <div class="param-val">1.080</div>
+      </div>
+      <div class="param-row">
+        <div class="param-name">Normalisation Factor</div>
+        <div class="param-val">0.9259</div>
+      </div>
+      <div class="param-row">
+        <div class="param-name">Pre assessments in normalisation</div>
+        <div class="param-val">38,686</div>
+      </div>
+    </div>
+    <div class="blind-spot-box reveal reveal-delay-4">
+      <p>"Every team TIGNUM has ever worked with entered below the performance threshold. None stayed there."</p>
+      <div class="attribution">TIGNUM Research · 15 years · 53,441 assessments</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DASHBOARD ───────────────────────────────────────────────────────────── -->
+<section id="dashboard">
+  <div class="dashboard-header">
+    <div>
+      <div class="section-label reveal">02 — The Data</div>
+      <h2 class="dashboard-headline reveal reveal-delay-1">53,441 assessments.<br><em>One consistent story.</em></h2>
+    </div>
+    <p class="dashboard-sub reveal reveal-delay-2">Across three measurement generations, 15 years, and every major industry vertical, the same pattern repeats. Leaders enter below the performance threshold. TIGNUM moves them above it. The data is large enough, old enough, and diverse enough that the signal is no longer ambiguous.</p>
+  </div>
+
+  <div class="kpi-grid reveal">
+    <div class="kpi"><span class="kpi-value">82.9%</span><span class="kpi-label">Improved — engagement window<br>30–90 days</span></div>
+    <div class="kpi"><span class="kpi-value">92.4%</span><span class="kpi-label">Sub-threshold leaders improved<br>entered below β 1.0</span></div>
+    <div class="kpi"><span class="kpi-value">14.6%</span><span class="kpi-label">Average risk reduction<br>engagement window cohort</span></div>
+    <div class="kpi"><span class="kpi-value">2.5×</span><span class="kpi-label">Improvers outgain decliners<br>net beta movement</span></div>
+  </div>
+
+  <!-- MAIN TREND CHART -->
+  <div class="chart-area reveal">
+    <div class="chart-title">Mean Normalised Beta by Year — 2011–2026 · All 53,441 Assessments · with BP / DC / CM breakdown</div>
+    <div class="chart-wrap h300"><canvas id="trendChart"></canvas></div>
+  </div>
+
+  <!-- THREE CHARTS -->
+  <div class="charts-three reveal">
+    <div>
+      <div class="chart-title">Pre → Post Beta by Entry State — Engagement Window · 30–90 Days</div>
+      <div class="chart-wrap h220"><canvas id="prepostChart"></canvas></div>
+    </div>
+    <div>
+      <div class="chart-title">Level Score Progression — Pre-Assessment Only</div>
+      <div class="chart-wrap h220"><canvas id="levelTrendChart"></canvas></div>
+    </div>
+    <div>
+      <div class="chart-title">Average Level Score by Pillar — Pre-Assessment Only</div>
+      <div class="chart-wrap h220"><canvas id="pillarChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- YEAR TABLE -->
+  <div class="year-table-wrap reveal">
+    <div class="chart-title">Year-by-Year Detail — Pre-Assessment Mean Beta · Level Scores</div>
+    <table class="ytbl">
+      <thead>
+        <tr>
+          <th>Year</th><th>Pre Mean β</th><th>% Multiplying</th>
+          <th style="color:#6aabf0">Brain &amp; Physiology<br><span style="opacity:.5;font-size:.5rem;letter-spacing:.05em;text-transform:none">pre-assessment avg / 100</span></th>
+          <th style="color:#e06060">Daily Challenges<br><span style="opacity:.5;font-size:.5rem;letter-spacing:.05em;text-transform:none">pre-assessment avg / 100</span></th>
+          <th style="color:#7ac49a">Critical Moments<br><span style="opacity:.5;font-size:.5rem;letter-spacing:.05em;text-transform:none">pre-assessment avg / 100</span></th>
+        </tr>
+      </thead>
+      <tbody id="ytbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── METHODOLOGY ─────────────────────────────────────────────────────────── -->
+<section id="methodology">
+  <div class="section-label reveal">03 — Methodology</div>
+  <h2 class="section-headline reveal reveal-delay-1" style="max-width:600px">Five steps from answer to <em>Beta.</em></h2>
+  <p class="reveal reveal-delay-2" style="font-size:1.04rem;opacity:.6;line-height:1.8;max-width:520px;margin-top:1rem">The calculation is deterministic, transparent, and reproducible across all three assessment generations spanning 2011 to today.</p>
+  <div class="method-grid">
+    <div class="steps">
+      <div class="step reveal"><div class="step-num">I</div><div>
+        <div class="step-title">Pillar Score</div>
+        <div class="step-formula">avg(answers per pillar)</div>
+        <p class="step-desc">Mean of all answers mapped to each Level × Pillar combination. Double-mapped questions contribute to both buckets independently.</p>
+      </div></div>
+      <div class="step reveal reveal-delay-1"><div class="step-num">II</div><div>
+        <div class="step-title">Level Score</div>
+        <div class="step-formula">(M + N + Mv + R) / 4</div>
+        <p class="step-desc">Average of four pillar scores — Mindset, Nutrition, Movement, Recovery — for each level. All four carry equal weight within a level.</p>
+      </div></div>
+      <div class="step reveal reveal-delay-2"><div class="step-num">III</div><div>
+        <div class="step-title">Overall Score</div>
+        <div class="step-formula">(1×BP + 2×DC + 3×CM) / 6</div>
+        <p class="step-desc">Weighted average. Critical Moments carries 3× weight. Divisor 6 is the sum of weights (1+2+3), keeping the result on the 1–5 scale.</p>
+      </div></div>
+      <div class="step reveal reveal-delay-3"><div class="step-num">IV</div><div>
+        <div class="step-title">Raw Beta</div>
+        <div class="step-formula">Score / 2.5</div>
+        <p class="step-desc">Maps the 1–5 score onto a 0–2 beta axis. Score 1.0 → β 0.40. Score 2.5 → β 1.00. Score 5.0 → β 2.00.</p>
+      </div></div>
+      <div class="step reveal reveal-delay-4"><div class="step-num">V</div><div>
+        <div class="step-title">Normalised Beta</div>
+        <div class="step-formula">Raw Beta × 0.9259</div>
+        <p class="step-desc">Anchored to the median of 38,686 pre-assessments (42.0% → Raw β 1.080 → × 0.9259 = 1.000). By definition, the median first-assessment beta equals 1.0. The threshold is derived from the data, not assumed.</p>
+      </div></div>
+    </div>
+    <div class="weights-col">
+      <div class="weight-card reveal" data-weight="1×">
+        <div class="weight-tag bp">Brain &amp; Physiology</div>
+        <div class="weight-title">Foundational readiness — weight 1×</div>
+        <p class="weight-desc">Sleep, nutrition, movement, recovery habits. The biological substrate everything else runs on. Necessary but not sufficient — a leader can sleep well and still collapse under negotiation pressure.</p>
+      </div>
+      <div class="weight-card reveal reveal-delay-1" data-weight="2×">
+        <div class="weight-tag dc">Daily Challenges</div>
+        <div class="weight-title">Operational readiness — weight 2×</div>
+        <p class="weight-desc">Performance under continuous load. How the leader shows up across the unrelenting sequence of decisions, meetings, and transitions that define the executive work day.</p>
+      </div>
+      <div class="weight-card reveal reveal-delay-2" data-weight="3×">
+        <div class="weight-tag cm">Critical Moments</div>
+        <div class="weight-title">Peak performance capacity — weight 3×</div>
+        <p class="weight-desc">Readiness for high-stakes negotiations, board presentations, and decisions where the outcome disproportionately determines enterprise value. The moments that separate ordinary from extraordinary.</p>
+      </div>
+    </div>
+  </div>
+  <!-- ALGORITHM DIAGRAM -->
+  <div class="reveal" style="margin-top:5rem;overflow-x:auto">
+    <div class="section-label" style="margin-bottom:2rem">Algorithm</div>
+    <svg width="100%" viewBox="0 0 820 710" style="max-width:900px;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+
+      <defs>
+        <marker id="alg-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#0a0a08" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+        <marker id="alg-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#b8935a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- left rail -->
+      <line x1="52" y1="16" x2="52" y2="650" stroke="#b8935a" stroke-width="0.5" stroke-dasharray="1 4"/>
+
+      <!-- ── INPUT ── -->
+      <text x="46" y="54" text-anchor="end" font-size="8" letter-spacing="2" fill="#b8935a" font-family="'DM Mono',monospace" opacity="0.7">INPUT</text>
+      <line x1="54" y1="54" x2="74" y2="54" stroke="#b8935a" stroke-width="0.5" opacity="0.4"/>
+      <rect x="76" y="34" width="720" height="40" rx="1" fill="rgba(10,10,8,.03)" stroke="#e8e3d8" stroke-width="1"/>
+      <text x="436" y="51" text-anchor="middle" font-size="15" font-family="'Cormorant Garamond',serif" font-style="italic" fill="#0a0a08" opacity="0.75">R = {r₁, r₂, … rₙ}</text>
+      <text x="436" y="65" text-anchor="middle" font-size="9" font-family="'DM Mono',monospace" fill="#0a0a08" opacity="0.35" letter-spacing="1">n ∈ {42, 51}   ·   rᵢ ∈ {1, 2, 3, 4, 5}</text>
+
+      <line x1="436" y1="74" x2="436" y2="100" stroke="#0a0a08" stroke-width="0.5" opacity="0.2" marker-end="url(#alg-a)"/>
+
+      <!-- ── S1: PILLAR SCORES ── -->
+      <text x="46" y="133" text-anchor="end" font-size="8" letter-spacing="2" fill="#b8935a" font-family="'DM Mono',monospace" opacity="0.7">S1</text>
+      <line x1="54" y1="133" x2="74" y2="133" stroke="#b8935a" stroke-width="0.5" opacity="0.4"/>
+
+      <!-- BP -->
+      <rect x="76" y="102" width="210" height="62" rx="1" fill="rgba(46,111,171,.05)" stroke="#2E6FAB" stroke-width="0.5" opacity="0.7"/>
+      <text x="181" y="121" text-anchor="middle" font-size="15" font-family="'Cormorant Garamond',serif" font-weight="600" fill="#2E6FAB">P_BP</text>
+      <text x="181" y="137" text-anchor="middle" font-size="9" font-family="'DM Mono',monospace" fill="#2E6FAB" opacity="0.7">= mean(r : level=BP)</text>
+      <text x="181" y="155" text-anchor="middle" font-size="8" font-family="'DM Mono',monospace" fill="#0a0a08" opacity="0.3" letter-spacing="0.5">Brain &amp; Physiology · w=1</text>
+
+      <!-- DC -->
+      <rect x="305" y="102" width="210" height="62" rx="1" fill="rgba(139,58,42,.05)" stroke="#8b3a2a" stroke-width="0.5" opacity="0.7"/>
+      <text x="410" y="121" text-anchor="middle" font-size="15" font-family="'Cormorant Garamond',serif" font-weight="600" fill="#8b3a2a">P_DC</text>
+      <text x="410" y="137" text-anchor="middle" font-size="9" font-family="'DM Mono',monospace" fill="#8b3a2a" opacity="0.7">= mean(r : level=DC)</text>
+      <text x="410" y="155" text-anchor="middle" font-size="8" font-family="'DM Mono',monospace" fill="#0a0a08" opacity="0.3" letter-spacing="0.5">Daily Challenges · w=2</text>
+
+      <!-- CM -->
+      <rect x="534" y="102" width="262" height="62" rx="1" fill="rgba(74,92,78,.05)" stroke="#4a5c4e" stroke-width="0.5" opacity="0.7"/>
+      <text x="665" y="121" text-anchor="middle" font-size="15" font-family="'Cormorant Garamond',serif" font-weight="600" fill="#4a5c4e">P_CM</text>
+      <text x="665" y="137" text-anchor="middle" font-size="9" font-family="'DM Mono',monospace" fill="#4a5c4e" opacity="0.7">= mean(r : level=CM)</text>
+      <text x="665" y="155" text-anchor="middle" font-size="8" font-family="'DM Mono',monospace" fill="#0a0a08" opacity="0.3" letter-spacing="0.5">Critical Moments · w=3</text>
+
+      <!-- fan-in lines -->
+      <line x1="181" y1="164" x2="181" y2="184" stroke="#0a0a08" stroke-width="0.5" opacity="0.15"/>
+      <line x1="410" y1="164" x2="410" y2="184" stroke="#0a0a08" stroke-width="0.5" opacity="0.15"/>
+      <line x1="665" y1="164" x2="665" y2="184" stroke="#0a0a08" stroke-width="0.5" opacity="0.15"/>
+      <line x1="181" y1="184" x2="665" y2="184" stroke="#0a0a08" stroke-width="0.5" opacity="0.15"/>
+      <line x1="436" y1="184" x2="436" y2="208" stroke="#0a0a08" stroke-width="0.5" opacity="0.2" marker-end="url(#alg-a)"/>
+
+      <!-- ── S2: WEIGHTED SCORE ── -->
+      <text x="46" y="240" text-anchor="end" font-size="8" letter-spacing="2" fill="#b8935a" font-family="'DM Mono',monospace" opacity="0.7">S2</text>
+      <line x1="54" y1="240" x2="74" y2="240" stroke="#b8935a" stroke-width="0.5" opacity="0.4"/>
+
+      <rect x="76" y="210" width="720" height="60" rx="1" fill="rgba(184,147,90,.05)" stroke="#b8935a" stroke-width="0.5"/>
+      <text x="436" y="230" text-anchor="middle" font-size="16" font-family="'Cormorant Garamond',serif" font-style="italic" fill="#0a0a08" opacity="0.8">S = (w_BP · P_BP + w_DC · P_DC + w_CM · P_CM) / Σw</text>
+      <text x="436" y="252" text-anchor="middle" font-size="9" font-family="'DM Mono',monospace" fill="#0a0a08" opacity="0.35" letter-spacing="0.5">w_BP=1 · w_DC=2 · w_CM=3 · Σw=6 · result S ∈ [1, 5]</text>
+
+      <line x1="436" y1="270" x2="436" y2="296" stroke="#0a0a08" stroke-width="0.5" opacity="0.2" marker-end="url(#alg-a)"/>
+
+      <!-- ── S3: RAW BETA ── -->
+      <text x="46" y="325" text-anchor="end" font-size="8" letter-spacing="2" fill="#b8935a" font-family="'DM Mono',monospace" opacity="0.7">S3</text>
+      <line x1="54" y1="325" x2="74" y2="325" stroke="#b8935a" stroke-width="0.5" opacity="0.4"/>
+
+      <rect x="76" y="298" width="720" height="54" rx="1" fill="rgba(10,10,8,.02)" stroke="#e8e3d8" stroke-width="1"/>
+      <text x="436" y="320" text-anchor="middle" font-size="16" font-family="'Cormorant Garamond',serif" font-style="italic" fill="#0a0a08" opacity="0.8">β_raw = S / c</text>
+      <text x="436" y="340" text-anchor="middle" font-size="9" font-family="'DM Mono',monospace" fill="#0a0a08" opacity="0.35" letter-spacing="0.5">c = 2.5   ·   maps S ∈ [1, 5] onto β_raw ∈ [0.40, 2.00]</text>
+
+      <line x1="436" y1="352" x2="436" y2="378" stroke="#0a0a08" stroke-width="0.5" opacity="0.2" marker-end="url(#alg-a)"/>
+
+      <!-- ── S4: NORMALISED BETA ── -->
+      <text x="46" y="412" text-anchor="end" font-size="8" letter-spacing="2" fill="#b8935a" font-family="'DM Mono',monospace" opacity="0.7">S4</text>
+      <line x1="54" y1="412" x2="74" y2="412" stroke="#b8935a" stroke-width="0.5" opacity="0.4"/>
+
+      <rect x="76" y="380" width="720" height="54" rx="1" fill="rgba(184,147,90,.08)" stroke="#b8935a" stroke-width="1"/>
+      <text x="436" y="402" text-anchor="middle" font-size="16" font-family="'Cormorant Garamond',serif" font-style="italic" fill="#0a0a08" opacity="0.85">β = β_raw · η</text>
+      <text x="436" y="422" text-anchor="middle" font-size="9" font-family="'DM Mono',monospace" fill="#0a0a08" opacity="0.4" letter-spacing="0.5">η = 1 / median(β_raw | survey_no=1) = 1/1.080 = 0.9259</text>
+
+      <!-- anchor note -->
+      <rect x="76" y="438" width="720" height="20" rx="1" fill="rgba(184,147,90,.03)" stroke="rgba(184,147,90,.2)" stroke-width="0.5"/>
+      <text x="436" y="448" text-anchor="middle" font-size="8" font-family="'DM Mono',monospace" fill="#0a0a08" opacity="0.35" letter-spacing="0.5">η anchored to N=38,686 pre-assessments · by construction: median(β | survey_no=1) ≡ 1.000</text>
+
+      <line x1="436" y1="458" x2="436" y2="484" stroke="#0a0a08" stroke-width="0.5" opacity="0.2" marker-end="url(#alg-a)"/>
+
+      <!-- threshold marker -->
+      <line x1="76" y1="486" x2="796" y2="486" stroke="#b8935a" stroke-width="0.5" stroke-dasharray="5 3" opacity="0.5"/>
+      <text x="436" y="480" text-anchor="middle" font-size="8" font-family="'DM Mono',monospace" fill="#b8935a" letter-spacing="2" opacity="0.8">τ = 1.0</text>
+
+      <!-- fork paths -->
+      <path d="M 270 488 L 232 504 L 232 518" fill="none" stroke="#8b3a2a" stroke-width="0.5" opacity="0.4" marker-end="url(#alg-a)"/>
+      <path d="M 600 488 L 638 504 L 638 518" fill="none" stroke="#4a5c4e" stroke-width="0.5" opacity="0.4" marker-end="url(#alg-a)"/>
+
+      <!-- ── OUTPUT ── -->
+      <text x="46" y="556" text-anchor="end" font-size="8" letter-spacing="2" fill="#b8935a" font-family="'DM Mono',monospace" opacity="0.7">OUT</text>
+      <line x1="54" y1="556" x2="74" y2="556" stroke="#b8935a" stroke-width="0.5" opacity="0.4"/>
+
+      <!-- Diminishing -->
+      <rect x="76" y="520" width="330" height="64" rx="1" fill="rgba(139,58,42,.05)" stroke="#8b3a2a" stroke-width="0.5" opacity="0.8"/>
+      <text x="241" y="540" text-anchor="middle" font-size="15" font-family="'Cormorant Garamond',serif" font-style="italic" fill="#8b3a2a">β &lt; τ   →   Diminishing</text>
+      <text x="241" y="558" text-anchor="middle" font-size="9" font-family="'DM Mono',monospace" fill="#8b3a2a" opacity="0.65">performance risk: elevated</text>
+      <text x="241" y="574" text-anchor="middle" font-size="8" font-family="'DM Mono',monospace" fill="#0a0a08" opacity="0.3">consumes &gt; generates</text>
+
+      <!-- Multiplying -->
+      <rect x="466" y="520" width="330" height="64" rx="1" fill="rgba(74,92,78,.05)" stroke="#4a5c4e" stroke-width="0.5" opacity="0.8"/>
+      <text x="631" y="540" text-anchor="middle" font-size="15" font-family="'Cormorant Garamond',serif" font-style="italic" fill="#4a5c4e">β ≥ τ   →   Multiplying</text>
+      <text x="631" y="558" text-anchor="middle" font-size="9" font-family="'DM Mono',monospace" fill="#4a5c4e" opacity="0.65">performance risk: low</text>
+      <text x="631" y="574" text-anchor="middle" font-size="8" font-family="'DM Mono',monospace" fill="#0a0a08" opacity="0.3">generates &gt; consumes</text>
+
+      <!-- team formula -->
+      <line x1="76" y1="600" x2="796" y2="600" stroke="#e8e3d8" stroke-width="0.5"/>
+      <rect x="76" y="608" width="720" height="38" rx="1" fill="rgba(10,10,8,.02)" stroke="#e8e3d8" stroke-width="0.5"/>
+      <text x="436" y="623" text-anchor="middle" font-size="14" font-family="'Cormorant Garamond',serif" font-style="italic" fill="#0a0a08" opacity="0.55">β_team = (1/m) · Σᵢ βᵢ</text>
+      <text x="436" y="638" text-anchor="middle" font-size="8" font-family="'DM Mono',monospace" fill="#0a0a08" opacity="0.3" letter-spacing="0.5">m = team members   ·   risk reduction = (β_post − β_pre) / β_post</text>
+
+      <!-- legend -->
+      <line x1="76" y1="656" x2="796" y2="656" stroke="#e8e3d8" stroke-width="0.5"/>
+      <text x="76" y="668" font-size="7.5" font-family="'DM Mono',monospace" fill="#0a0a08" opacity="0.25" letter-spacing="0.3">R = responses   S = overall score   c = conversion factor   β = normalised beta   η = normalisation factor   τ = threshold</text>
+    </svg>
+  </div>
+
+
+</section>
+
+<!-- ── FINDINGS ────────────────────────────────────────────────────────────── -->
+<section id="findings">
+  <div class="findings-header">
+    <div>
+      <div class="section-label reveal">04 — Key Findings</div>
+      <h2 class="findings-headline reveal reveal-delay-1">The data speaks <em>clearly.</em></h2>
+    </div>
+    <p class="reveal reveal-delay-2" style="font-size:1.04rem;line-height:1.9;opacity:.7;padding-top:3rem">Across 15 years, three assessment generations, and diverse geographies, the same signal repeats consistently enough to stake a decision on.</p>
+  </div>
+  <div class="why-grid">
+    <div class="why-card reveal" data-num="1">
+      <div class="why-card-tag">Engagement window · 30–90 days</div>
+      <div class="why-num">82.9%</div>
+      <div class="why-card-title">Of leaders improved in the engagement window</div>
+      <p class="why-card-body">When TIGNUM is actively engaged, 82.9% of leaders improved their Readiness Risk Score. Clean sample: 30-day minimum gap, noise removed, straight-line responses excluded. Pre β 1.060 → Post β 1.241. Risk reduction: 14.6%.</p>
+    </div>
+    <div class="why-card reveal reveal-delay-1" data-num="2">
+      <div class="why-card-tag">Sub-threshold leaders</div>
+      <div class="why-num rust">92.4%</div>
+      <div class="why-card-title">Of at-risk leaders improved their score</div>
+      <p class="why-card-body">Of leaders who entered below 1.0 — those representing the highest performance risk — 92.4% moved upward in the engagement window. Pre β 0.829 → Post β 1.088. The leaders who needed to move most, moved.</p>
+    </div>
+    <div class="why-card reveal reveal-delay-2" data-num="3">
+      <div class="why-card-tag">15-year trend</div>
+      <div class="why-num gold">+14.5pp</div>
+      <div class="why-card-title">CM improved the most across all 15 years</div>
+      <p class="why-card-body">Critical Moments — the highest-weighted level — improved by +14.5 percentage points from 2011–2014 (avg 37%) to 2022–2026 (avg 52%). BP improved +10.5pp, DC improved +11.3pp. The most important dimension improved the most.</p>
+    </div>
+    <div class="why-card reveal reveal-delay-3" data-num="4">
+      <div class="why-card-tag">Population signal</div>
+      <div class="why-num sage">71.8%</div>
+      <div class="why-card-title">Improved across all 2,795 clean pre/post pairs</div>
+      <p class="why-card-body">Across all time windows and all three generations, 71.8% of leaders improved. Of the 28.2% who declined, 13.3% were already above threshold and remained above it — natural variation, not a risk signal. Net beta movement: 2.5× more upward than downward.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── PHYSIOLOGY ──────────────────────────────────────────────────────────── -->
+<section id="physiology">
+  <div class="physio-header">
+    <div>
+      <div class="section-label reveal">05 — Physiological Anchoring</div>
+      <h2 class="physio-headline reveal reveal-delay-1">The Beta measures something <em>real.</em></h2>
+    </div>
+    <div class="reveal reveal-delay-2">
+      <p style="font-size:1.04rem;line-height:1.9;opacity:.55;margin-bottom:1.5rem">The central question about any behavioural self-report instrument is whether it tracks actual physiological reality or just how someone wishes they lived. A subset of 517 leaders completed comprehensive medical assessments alongside their SHPI assessments — blood biomarkers, cardiovascular screening, body composition, and functional movement testing. The correlations answer the question directly.</p>
+      <p style="font-size:1.04rem;line-height:1.9;opacity:.55">Leaders with higher movement scores have measurably higher aerobic capacity. Leaders with higher nutrition scores have measurably lower blood pressure and smaller waist circumference. Behaviour predicts physiology — and physiology validates behaviour. The instrument is not measuring aspiration. It is measuring adaptation.</p>
+    </div>
+  </div>
+
+  <!-- CLAIM STRIP -->
+  <div class="reveal" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:4rem">
+    <div style="background:rgba(245,242,235,.04);border:1px solid rgba(245,242,235,.08);padding:2.5rem;text-align:center">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:300;color:var(--gl);line-height:1;margin-bottom:.5rem">517</div>
+      <div style="font-size:.86rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);opacity:.5;line-height:1.6">leaders with full<br>medical assessment</div>
+    </div>
+    <div style="background:rgba(245,242,235,.04);border:1px solid rgba(245,242,235,.08);padding:2.5rem;text-align:center">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:300;color:var(--gl);line-height:1;margin-bottom:.5rem">4</div>
+      <div style="font-size:.86rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);opacity:.5;line-height:1.6">significant correlations<br>p &lt; 0.001 to p = 0.002</div>
+    </div>
+    <div style="background:rgba(245,242,235,.04);border:1px solid rgba(245,242,235,.08);padding:2.5rem;text-align:center">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:300;color:var(--gl);line-height:1;margin-bottom:.5rem">0%</div>
+      <div style="font-size:.86rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist);opacity:.5;line-height:1.6">self-report bias<br>in objective markers</div>
+    </div>
+  </div>
+
+  <!-- CORRELATIONS -->
+  <div class="corr-stats reveal">
+    <div class="corr-stat">
+      <div>
+        <div class="corr-r">r = +0.24</div>
+        <div style="margin-top:.5rem">
+          <svg width="120" height="8" style="display:block">
+            <rect x="0" y="2" width="120" height="4" rx="2" fill="rgba(245,242,235,.08)"/>
+            <rect x="0" y="2" width="72" height="4" rx="2" fill="var(--gl)" opacity=".7"/>
+          </svg>
+        </div>
+        <div style="font-size:.74rem;font-family:'DM Mono',monospace;color:var(--mist);opacity:.4;margin-top:.4rem">p &lt; 0.001 · ***</div>
+      </div>
+      <div class="corr-detail">
+        <div class="corr-title">Aerobic fitness (VO₂) predicts movement score</div>
+        <p class="corr-desc" style="margin-bottom:.8rem">The strongest correlation in the dataset. Leaders who report consistent movement behaviours have measurably higher cardiovascular capacity — not just better intentions. VO₂ max is the most evidence-backed predictor of sustained cognitive performance under pressure. When a leader scores high on movement behaviours, their body confirms it.</p>
+        <div style="padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,122,.3);font-family:'Cormorant Garamond',serif;font-size:1.0rem;font-style:italic;color:var(--gl);opacity:.8">The instrument is not asking how fit you feel. It is asking what you do — and physiology records what you actually do.</div>
+      </div>
+    </div>
+
+    <div class="corr-stat reveal reveal-delay-1">
+      <div>
+        <div class="corr-r neg">r = −0.19</div>
+        <div style="margin-top:.5rem">
+          <svg width="120" height="8" style="display:block">
+            <rect x="0" y="2" width="120" height="4" rx="2" fill="rgba(245,242,235,.08)"/>
+            <rect x="0" y="2" width="57" height="4" rx="2" fill="#c05040" opacity=".6"/>
+          </svg>
+        </div>
+        <div style="font-size:.74rem;font-family:'DM Mono',monospace;color:var(--mist);opacity:.4;margin-top:.4rem">p &lt; 0.001 · ***</div>
+      </div>
+      <div class="corr-detail">
+        <div class="corr-title">Waist circumference is predicted by nutrition score</div>
+        <p class="corr-desc" style="margin-bottom:.8rem">Leaders with higher nutrition behaviour scores carry measurably smaller waist circumference — one of the most clinically significant markers of metabolic risk. This correlation runs in the expected direction with meaningful magnitude, confirming the nutrition pillar captures genuine dietary patterns rather than socially desirable responses.</p>
+        <div style="padding:.8rem 1.2rem;border-left:2px solid rgba(192,80,64,.3);font-family:'Cormorant Garamond',serif;font-size:1.0rem;font-style:italic;color:#c07060;opacity:.8">Waist circumference cannot be faked. If the correlation exists, the behaviour is real.</div>
+      </div>
+    </div>
+
+    <div class="corr-stat reveal reveal-delay-2">
+      <div>
+        <div class="corr-r neg">r = −0.16</div>
+        <div style="margin-top:.5rem">
+          <svg width="120" height="8" style="display:block">
+            <rect x="0" y="2" width="120" height="4" rx="2" fill="rgba(245,242,235,.08)"/>
+            <rect x="0" y="2" width="48" height="4" rx="2" fill="#c05040" opacity=".55"/>
+          </svg>
+        </div>
+        <div style="font-size:.74rem;font-family:'DM Mono',monospace;color:var(--mist);opacity:.4;margin-top:.4rem">p &lt; 0.001 · ***</div>
+      </div>
+      <div class="corr-detail">
+        <div class="corr-title">Diastolic blood pressure tracks nutrition behaviour</div>
+        <p class="corr-desc" style="margin-bottom:.8rem">Leaders scoring higher on nutrition-related readiness behaviours have measurably lower diastolic blood pressure — the sustained pressure between heartbeats that most directly reflects chronic cardiovascular load. The link between structured nutritional practice and cardiovascular health is well-established in clinical literature. The TIGNUM instrument captures it behaviourally.</p>
+        <div style="padding:.8rem 1.2rem;border-left:2px solid rgba(192,80,64,.3);font-family:'Cormorant Garamond',serif;font-size:1.0rem;font-style:italic;color:#c07060;opacity:.8">Lower blood pressure is not a feeling. It is a consequence of sustained behaviour over time.</div>
+      </div>
+    </div>
+
+    <div class="corr-stat reveal reveal-delay-3">
+      <div>
+        <div class="corr-r neg">r = −0.17</div>
+        <div style="margin-top:.5rem">
+          <svg width="120" height="8" style="display:block">
+            <rect x="0" y="2" width="120" height="4" rx="2" fill="rgba(245,242,235,.08)"/>
+            <rect x="0" y="2" width="51" height="4" rx="2" fill="#c05040" opacity=".55"/>
+          </svg>
+        </div>
+        <div style="font-size:.74rem;font-family:'DM Mono',monospace;color:var(--mist);opacity:.4;margin-top:.4rem">p = 0.002 · **</div>
+      </div>
+      <div class="corr-detail">
+        <div class="corr-title">Body fat percentage is predicted by movement score</div>
+        <p class="corr-desc" style="margin-bottom:.8rem">Leaders who report consistent strength and mobility behaviours carry measurably lower body fat. The fact that this correlation is meaningful but modest (r = −0.17) is itself informative — it confirms that the movement pillar captures something real while also demonstrating that the Beta measures dimensions of readiness that go well beyond physical fitness alone.</p>
+        <div style="padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,122,.3);font-family:'Cormorant Garamond',serif;font-size:1.0rem;font-style:italic;color:var(--gl);opacity:.8">A CFO can read this as: the instrument is grounded in physiology, but it is measuring performance readiness — which is more than a fitness score.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLOSING STATEMENT -->
+  <div class="reveal" style="margin-top:4rem;padding:3.5rem;border:1px solid rgba(245,242,235,.1);background:rgba(245,242,235,.03)">
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:4rem;align-items:center">
+      <div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;color:var(--gl);line-height:1;margin-bottom:.5rem">What this<br>means.</div>
+      </div>
+      <div>
+        <p style="font-size:1.04rem;line-height:1.9;opacity:.65;margin-bottom:1.2rem">When a leadership team's beta drops below 1.0, the instrument is not detecting a mood. It is detecting a pattern of behaviour whose physiological consequences are measurable — cardiovascular load, metabolic strain, compromised recovery. These are not invisible risks. They are risks that have already started to accumulate in the body.</p>
+        <p style="font-size:1.04rem;line-height:1.9;opacity:.65">When TIGNUM moves a team's beta above the threshold, it is not improving a score. It is changing the behaviours whose physiological footprint has been validated against objective clinical markers. That is the difference between a wellness programme and a performance risk instrument.</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── TECHNICAL: SQL ────────────────────────────────────────────────────── -->
+<section id="sql" style="background:var(--ink);color:var(--paper);padding:8rem 3rem;min-height:auto">
+  <div class="section-label reveal" style="color:var(--gold)">06 — Technical Reference</div>
+  <h2 class="section-headline reveal reveal-delay-1" style="color:var(--paper);max-width:700px">Calculating the Beta <em>in the database.</em></h2>
+  <p class="reveal reveal-delay-2" style="font-size:1.04rem;line-height:1.9;opacity:.55;max-width:640px;margin-top:1.5rem;margin-bottom:4rem">The SQL below retrieves individual normalised betas from <code style="color:var(--gl);font-family:'DM Mono',monospace">prindex_result</code>. The normalisation factor (0.9259) is fixed — derived from the pre-assessment population median and stored as a constant so the threshold does not drift as new data accumulates.</p>
+
+  <!-- CORRECTED SQL -->
+  <div>
+    <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;color:#7ac49a;margin-bottom:1rem;display:flex;align-items:center;gap:.8rem"><span style="width:1.2rem;height:1px;background:#7ac49a;display:inline-block"></span>Corrected SQL — returns individual betas per leader</div>
+    <pre style="background:#0f1214;border:1px solid rgba(74,92,78,.3);border-left:3px solid #7ac49a;padding:2rem;font-family:'DM Mono',monospace;font-size:1.0rem;line-height:1.8;color:rgba(200,207,201,.8);overflow-x:auto;white-space:pre"><span style="color:rgba(200,207,201,.35)">-- Normalisation factor: fixed constant derived from 38,686 pre-assessments</span>
+<span style="color:rgba(200,207,201,.35)">-- Pre-assessment median score = 2.700  →  raw beta = 1.080  →  factor = 1/1.080 = 0.9259</span>
+<span style="color:rgba(200,207,201,.35)">-- DO NOT recalculate from live data — threshold must remain stable</span>
+
+SELECT
+  assessment.id,
+  assessment.user_id,
+  users.email,
+  user_profile.company_name,
+  assessment.completed_at,
+  assessment.rn                                               AS survey_number,
+  assessment.overall_score,
+  ROUND(assessment.overall_score / 2.5, 4)                   AS raw_beta,
+  ROUND(assessment.overall_score / 2.5 * <span style="color:var(--gl)">0.9259</span>, 4)            AS norm_beta,
+  CASE
+    WHEN ROUND(assessment.overall_score / 2.5 * 0.9259, 4) &gt;= 1.0
+      THEN <span style="color:#7ac49a">&#39;Multiplying&#39;</span>
+    ELSE <span style="color:#c05040">&#39;Diminishing&#39;</span>
+  END                                                     AS beta_state
+
+FROM (
+  SELECT
+    prindex_result.id,
+    prindex_result.user_id,
+    prindex_result.completed_at,
+    ROW_NUMBER() OVER (
+      PARTITION BY prindex_result.user_id
+      ORDER BY prindex_result.completed_at
+    )                                                     AS rn,
+    (prindex_result.summary #>> &#39;{score}&#39;::text[])::double precision
+                                                          AS overall_score
+  FROM prindex_result
+  WHERE prindex_result.state = &#39;COMPLETED&#39;
+) AS assessment
+
+LEFT JOIN users        ON users.id = assessment.user_id
+LEFT JOIN user_profile ON user_profile.user_id = users.id
+
+WHERE assessment.rn = 1                                       <span style="color:rgba(200,207,201,.35)">-- pre-assessment only</span>
+  AND users.email NOT LIKE <span style="color:var(--gl)">&#39;%tignum%&#39;</span>               <span style="color:rgba(200,207,201,.35)">-- exclude test accounts</span>
+  AND ({{email}})
+  AND ({{company_name}})
+  AND ({{Survey_Date}})
+
+ORDER BY assessment.completed_at DESC</pre>
+  </div>
+
+
+  <!-- TEAM QUERIES -->
+  <div style="margin-top:3rem">
+    <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;color:#7ac49a;margin-bottom:1rem;display:flex;align-items:center;gap:.8rem"><span style="width:1.2rem;height:1px;background:#7ac49a;display:inline-block"></span>Team summary — one row per company, pre-assessments only</div>
+    <p style="font-size:1.04rem;line-height:1.9;opacity:.5;max-width:640px;margin-bottom:1.5rem">Aggregates all leaders within a company to produce a single team beta, the percentage multiplying, and the count. Filters to first assessments only so the result reflects the entry-point baseline — where the team sits before any engagement.</p>
+    <pre style="background:#0f1214;border:1px solid rgba(74,92,78,.3);border-left:3px solid #7ac49a;padding:2rem;font-family:'DM Mono',monospace;font-size:1.0rem;line-height:1.8;color:rgba(200,207,201,.8);overflow-x:auto;white-space:pre"><span style="color:rgba(200,207,201,.35)">-- Team Beta: average normalised beta for all first-assessment leaders in a company</span>
+<span style="color:rgba(200,207,201,.35)">-- Returns one row per company with team beta, state split, and member count</span>
+
+SELECT
+  user_profile.company_name,
+  COUNT(*)                                                    AS n_leaders,
+  ROUND(AVG(assessment.norm_beta), 4)                            AS team_beta,
+  ROUND(AVG(assessment.norm_beta), 4) &gt;= 1.0                    AS team_multiplying,
+  ROUND(
+    SUM(CASE WHEN assessment.norm_beta &gt;= 1.0 THEN 1 ELSE 0 END)::numeric
+    / COUNT(*) * 100, 1
+  )                                                           AS pct_multiplying,
+  ROUND(
+    SUM(CASE WHEN assessment.norm_beta &lt; 1.0 THEN 1 ELSE 0 END)::numeric
+    / COUNT(*) * 100, 1
+  )                                                           AS pct_diminishing,
+  MIN(assessment.completed_at)                                    AS earliest_survey,
+  MAX(assessment.completed_at)                                    AS latest_survey
+
+FROM (
+  SELECT
+    prindex_result.user_id,
+    prindex_result.completed_at,
+    ROUND(
+      (prindex_result.summary #&gt;&gt; &#39;{score}&#39;::text[])::double precision
+      / 2.5 * <span style="color:var(--gl)">0.9259</span>, 4
+    )                                                         AS norm_beta,
+    ROW_NUMBER() OVER (
+      PARTITION BY prindex_result.user_id
+      ORDER BY prindex_result.completed_at
+    )                                                         AS rn
+  FROM prindex_result
+  WHERE prindex_result.state = &#39;COMPLETED&#39;
+) AS assessment
+
+LEFT JOIN users        ON users.id = assessment.user_id
+LEFT JOIN user_profile ON user_profile.user_id = users.id
+
+WHERE assessment.rn = 1                                           <span style="color:rgba(200,207,201,.35)">-- pre-assessment only</span>
+  AND users.email NOT LIKE <span style="color:var(--gl)">&#39;%tignum%&#39;</span>
+  AND ({{company_name}})
+  AND ({{Survey_Date}})
+
+GROUP BY user_profile.company_name
+ORDER BY team_beta ASC</pre>
+  </div>
+
+  <!-- TEAM PRE/POST -->
+  <div style="margin-top:3rem">
+    <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;color:#7ac49a;margin-bottom:1rem;display:flex;align-items:center;gap:.8rem"><span style="width:1.2rem;height:1px;background:#7ac49a;display:inline-block"></span>Team pre / post movement — risk reduction per company</div>
+    <p style="font-size:1.04rem;line-height:1.9;opacity:.5;max-width:640px;margin-bottom:1.5rem">For leaders who have completed more than one assessment, this compares their first (pre) beta against their most recent (post) beta and aggregates to team level. Risk reduction = (post − pre) ÷ post.</p>
+    <pre style="background:#0f1214;border:1px solid rgba(74,92,78,.3);border-left:3px solid #7ac49a;padding:2rem;font-family:'DM Mono',monospace;font-size:1.0rem;line-height:1.8;color:rgba(200,207,201,.8);overflow-x:auto;white-space:pre"><span style="color:rgba(200,207,201,.35)">-- Team pre/post: first vs most recent assessment per user, aggregated by company</span>
+<span style="color:rgba(200,207,201,.35)">-- Only includes users with 2+ completed assessments</span>
+
+WITH assessments AS (
+  SELECT
+    prindex_result.user_id,
+    prindex_result.completed_at,
+    ROUND(
+      (prindex_result.summary #&gt;&gt; &#39;{score}&#39;::text[])::double precision
+      / 2.5 * <span style="color:var(--gl)">0.9259</span>, 4
+    )                                                         AS norm_beta,
+    ROW_NUMBER() OVER (
+      PARTITION BY prindex_result.user_id
+      ORDER BY prindex_result.completed_at ASC
+    )                                                         AS rn_asc,
+    ROW_NUMBER() OVER (
+      PARTITION BY prindex_result.user_id
+      ORDER BY prindex_result.completed_at DESC
+    )                                                         AS rn_desc,
+    COUNT(*) OVER (PARTITION BY prindex_result.user_id)      AS total_surveys
+  FROM prindex_result
+  WHERE prindex_result.state = &#39;COMPLETED&#39;
+),
+paired AS (
+  SELECT
+    pre.user_id,
+    pre.norm_beta                                             AS pre_beta,
+    post.norm_beta                                            AS post_beta,
+    post.norm_beta - pre.norm_beta                           AS beta_change,
+    pre.completed_at                                          AS pre_date,
+    post.completed_at                                         AS post_date,
+    EXTRACT(DAY FROM post.completed_at - pre.completed_at)   AS days_gap
+  FROM assessments pre
+  JOIN assessments post ON post.user_id = pre.user_id
+  WHERE pre.rn_asc = 1
+    AND post.rn_desc = 1
+    AND pre.total_surveys &gt; 1
+    AND pre.rn_asc != post.rn_desc  <span style="color:rgba(200,207,201,.35)">-- ensure pre != post row</span>
+)
+
+SELECT
+  user_profile.company_name,
+  COUNT(*)                                                    AS n_leaders,
+  ROUND(AVG(paired.pre_beta), 4)                             AS pre_team_beta,
+  ROUND(AVG(paired.post_beta), 4)                            AS post_team_beta,
+  ROUND(AVG(paired.beta_change), 4)                          AS avg_beta_change,
+  ROUND(
+    (AVG(paired.post_beta) - AVG(paired.pre_beta))
+    / AVG(paired.post_beta) * 100, 1
+  )                                                           AS risk_reduction_pct,
+  SUM(CASE WHEN paired.beta_change &gt; 0 THEN 1 ELSE 0 END)   AS n_improved,
+  ROUND(
+    SUM(CASE WHEN paired.beta_change &gt; 0 THEN 1 ELSE 0 END)::numeric
+    / COUNT(*) * 100, 1
+  )                                                           AS pct_improved,
+  ROUND(AVG(paired.days_gap), 0)                             AS avg_days_between
+
+FROM paired
+LEFT JOIN users        ON users.id = paired.user_id
+LEFT JOIN user_profile ON user_profile.user_id = users.id
+
+WHERE users.email NOT LIKE <span style="color:var(--gl)">&#39;%tignum%&#39;</span>
+  AND ({{company_name}})
+
+GROUP BY user_profile.company_name
+ORDER BY risk_reduction_pct DESC</pre>
+  </div>
+
+  <!-- FORMULA REMINDER -->
+  <div style="margin-top:3rem;padding:2rem;border:1px solid rgba(245,242,235,.08);display:grid;grid-template-columns:repeat(3,1fr);gap:2rem">
+    <div>
+      <div style="font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.5;margin-bottom:.5rem">Step 1 — Raw Beta</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--gl)">overall_score / 2.5</div>
+      <div style="font-size:.82rem;opacity:.4;margin-top:.3rem;line-height:1.6">Maps 1–5 score onto 0–2 axis</div>
+    </div>
+    <div>
+      <div style="font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.5;margin-bottom:.5rem">Step 2 — Normalised Beta</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--gl)">raw_beta × 0.9259</div>
+      <div style="font-size:.82rem;opacity:.4;margin-top:.3rem;line-height:1.6">Fixed factor. Pre median 42.0% → raw β 1.080 → factor 0.9259</div>
+    </div>
+    <div>
+      <div style="font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mist);opacity:.5;margin-bottom:.5rem">Step 3 — State</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--gl)">≥ 1.0 → Multiplying</div>
+      <div style="font-size:.82rem;opacity:.4;margin-top:.3rem;line-height:1.6">Threshold = pre-assessment population median. 38,686 assessments.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ────────────────────────────────────────────────────────────────── -->
+<section id="cta">
+  <div class="bg-text">BETA</div>
+  <div class="cta-content">
+    <div class="cta-eyebrow">The instrument</div>
+    <h2 class="cta-headline">The system of record for <em>human performance.</em></h2>
+    <p class="cta-sub">TIGNUM has built the only longitudinal dataset of executive readiness in existence. Every engagement adds to a 15-year proprietary data moat. Every leader measured strengthens the normalisation. The instrument gets sharper with every data point.</p>
+    <a href="#" class="cta-btn">Request Technical White Paper</a>
+  </div>
+</section>
+
+<footer>
+  <span>TIGNUM · Readiness Risk Beta · Data Overview · 2026</span>
+  <span>Confidential · All data from TIGNUM proprietary dataset · Excludes Novartis</span>
+</footer>
+
+<script>
+// ── Cursor ─────────────────────────────────────────────────────────────────
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+document.addEventListener('mousemove',e=>{
+  const x=e.clientX,y=e.clientY;
+  cursor.style.left=x-4+'px';cursor.style.top=y-4+'px';
+  ring.style.left=x-16+'px';ring.style.top=y-16+'px';
+});
+document.querySelectorAll('a,button,.threshold-state,.kpi,.why-card,.sfs-card,.corr-stat,.step,.weight-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.transform='scale(2.5)';ring.style.transform='scale(1.5)';ring.style.opacity='1'});
+  el.addEventListener('mouseleave',()=>{cursor.style.transform='scale(1)';ring.style.transform='scale(1)';ring.style.opacity='.6'});
+});
+
+// ── Scroll reveal ──────────────────────────────────────────────────────────
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// ── Chart defaults ─────────────────────────────────────────────────────────
+Chart.defaults.font.family="'DM Mono', monospace";
+Chart.defaults.font.size=12;
+Chart.defaults.color='rgba(200,207,201,.5)';
+
+const GOLD='#b8935a',GL='#d4af7a',RUST='#8b3a2a',SAGE='#4a5c4e';
+const P2='rgba(245,242,235,.06)';
+const TIP={backgroundColor:'rgba(10,10,8,.92)',borderColor:'rgba(184,147,90,.3)',borderWidth:1,titleColor:GL,bodyColor:'rgba(200,207,201,.8)'};
+
+const threshPlugin={
+  id:'thr',
+  afterDraw(chart){
+    const{ctx,scales,chartArea}=chart;const y=scales.y;if(!y)return;
+    const yp=y.getPixelForValue(1.0);
+    if(yp<chartArea.top||yp>chartArea.bottom)return;
+    ctx.save();ctx.beginPath();ctx.moveTo(chartArea.left,yp);ctx.lineTo(chartArea.right,yp);
+    ctx.strokeStyle='rgba(184,147,90,.5)';ctx.lineWidth=1;ctx.setLineDash([6,4]);ctx.stroke();
+    ctx.fillStyle=GOLD;ctx.font='9px DM Mono,monospace';ctx.fillText('β 1.0',chartArea.right-36,yp-5);
+    ctx.restore();
+  }
+};
+
+// ── Year data ──────────────────────────────────────────────────────────────
+const YRS=[
+  {y:2011,n:296,   b:0.946,m:38.9,bp:51.4,dc:37.0,cm:36.2,s:'Legacy'},
+  {y:2012,n:989,   b:0.946,m:38.1,bp:50.6,dc:38.5,cm:35.5,s:'Legacy'},
+  {y:2013,n:1281,  b:0.972,m:43.2,bp:51.1,dc:40.7,cm:37.3,s:'Legacy'},
+  {y:2014,n:2001,  b:0.929,m:36.4,bp:49.7,dc:37.2,cm:34.3,s:'Legacy'},
+  {y:2015,n:4406,  b:0.975,m:42.6,bp:51.8,dc:40.9,cm:37.4,s:'Legacy'},
+  {y:2016,n:2305,  b:0.993,m:46.6,bp:52.3,dc:42.3,cm:38.7,s:'Legacy'},
+  {y:2017,n:1336,  b:0.979,m:45.4,bp:52.5,dc:41.4,cm:37.3,s:'Legacy'},
+  {y:2018,n:4463,  b:0.998,m:48.4,bp:53.3,dc:43.1,cm:38.6,s:'DB'},
+  {y:2019,n:3583,  b:1.015,m:50.5,bp:53.5,dc:43.8,cm:40.2,s:'DB'},
+  {y:2020,n:3277,  b:0.987,m:46.0,bp:52.1,dc:41.7,cm:38.3,s:'DB'},
+  {y:2021,n:2595,  b:1.017,m:51.4,bp:53.2,dc:43.7,cm:40.7,s:'DB'},
+  {y:2022,n:1884,  b:1.145,m:73.1,bp:63.9,dc:51.9,cm:48.9,s:'DB'},
+  {y:2023,n:997,   b:1.116,m:67.9,bp:55.6,dc:50.5,cm:49.2,s:'DB'},
+  {y:2024,n:1334,  b:1.140,m:71.1,bp:56.9,dc:52.2,cm:51.0,s:'New Prindex'},
+  {y:2025,n:1172,  b:1.150,m:72.8,bp:58.0,dc:52.8,cm:51.6,s:'New Prindex'},
+  {y:2026,n:368,   b:1.162,m:73.4,bp:58.2,dc:53.5,cm:52.5,s:'New Prindex'},
+];
+
+// ── TREND CHART with world context annotations ─────────────────────────────
+new Chart(document.getElementById('trendChart'),{
+  type:'bar',
+  data:{
+    labels:YRS.map(d=>d.y),
+    datasets:[
+      {type:'line',label:'Mean Beta',yAxisID:'y',data:YRS.map(d=>d.b),borderColor:GL,backgroundColor:'transparent',borderWidth:2.5,pointBackgroundColor:GL,pointRadius:4,tension:.3,order:0},
+      {label:'BP %',data:YRS.map(d=>d.bp),backgroundColor:'rgba(46,111,171,.35)',borderWidth:0,yAxisID:'y2',order:1},
+      {label:'DC %',data:YRS.map(d=>d.dc),backgroundColor:'rgba(139,58,42,.35)',borderWidth:0,yAxisID:'y2',order:2},
+      {label:'CM %',data:YRS.map(d=>d.cm),backgroundColor:'rgba(74,148,99,.35)',borderWidth:0,yAxisID:'y2',order:3},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,interaction:{mode:'index'},
+    plugins:{legend:{labels:{boxWidth:10,padding:20,color:'rgba(200,207,201,.6)'}},tooltip:TIP},
+    scales:{
+      x:{grid:{color:P2},ticks:{color:'rgba(200,207,201,.4)'}},
+      y:{position:'left',min:.88,max:1.25,grid:{color:P2},title:{display:true,text:'Mean Beta',color:GOLD},ticks:{callback:v=>v.toFixed(2),color:'rgba(200,207,201,.4)'}},
+      y2:{position:'right',min:0,max:80,grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%',color:'rgba(200,207,201,.3)'},title:{display:true,text:'Level %',color:'rgba(200,207,201,.3)'}},
+    }
+  },
+  plugins:[
+    threshPlugin,
+    {id:'ctx',afterDraw(chart){
+      const{ctx,scales,chartArea}=chart;const x=scales.x;if(!x)return;
+      ctx.save();
+      const events=[
+        {yr:2011,label:['Post-GFC recovery','(data starts here)'],side:'right',col:'rgba(200,207,201,.3)'},
+        {yr:2016,label:['Global wellness boom'],side:'right',col:'rgba(184,147,90,.7)'},
+                {yr:2020,label:['COVID-19','pandemic'],side:'left',col:'rgba(200,80,80,.75)'},
+        {yr:2022,label:['Post-pandemic','wellbeing surge'],side:'right',col:'rgba(74,148,99,.75)'},
+      ];
+      events.forEach(ev=>{
+        const idx=YRS.findIndex(d=>d.y===ev.yr);if(idx<0)return;
+        const xp=x.getPixelForValue(idx);
+        ctx.beginPath();ctx.moveTo(xp,chartArea.top+28);ctx.lineTo(xp,chartArea.bottom);
+        ctx.strokeStyle=ev.col;ctx.lineWidth=1;ctx.setLineDash([3,4]);ctx.stroke();ctx.setLineDash([]);
+        ctx.font="300 9px 'DM Mono',monospace";ctx.fillStyle=ev.col;
+        ctx.textAlign=ev.side==='right'?'left':'right';
+        const lx=ev.side==='right'?xp+5:xp-5;
+        ev.label.forEach((ln,i)=>ctx.fillText(ln,lx,chartArea.top+30+i*13));
+      });
+      ctx.restore();
+    }}
+  ]
+});
+
+// ── % MULTIPLYING BY YEAR ─────────────────────────────────────────────────
+new Chart(document.getElementById('genChart'),{
+  type:'bar',
+  data:{
+    labels:YRS.map(d=>d.y),
+    datasets:[{
+      label:'% Multiplying',
+      data:YRS.map(d=>d.m),
+      backgroundColor:YRS.map(d=>d.m>=50?'rgba(74,92,78,.75)':'rgba(139,58,42,.6)'),
+      borderWidth:0,borderRadius:2
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{...TIP,callbacks:{label:ctx=>`${ctx.raw.toFixed(1)}% Multiplying (β ≥ 1.0)`}}},
+    scales:{x:{grid:{color:P2},ticks:{color:'rgba(200,207,201,.4)'}},y:{min:0,max:100,grid:{color:P2},ticks:{callback:v=>v+'%',color:'rgba(200,207,201,.4)'}}}
+  },
+  plugins:[{id:'t50',afterDraw(chart){
+    const{ctx,scales,chartArea}=chart;const y=scales.y;if(!y)return;
+    const yp=y.getPixelForValue(50);
+    ctx.save();ctx.beginPath();ctx.moveTo(chartArea.left,yp);ctx.lineTo(chartArea.right,yp);
+    ctx.strokeStyle='rgba(184,147,90,.45)';ctx.lineWidth=1;ctx.setLineDash([5,4]);ctx.stroke();
+    ctx.fillStyle='rgba(184,147,90,.65)';ctx.font="9px 'DM Mono',monospace";
+    ctx.fillText('50% threshold',chartArea.right-80,yp-5);ctx.restore();
+  }}]
+});
+
+// ── PRE/POST CHART ────────────────────────────────────────────────────────
+new Chart(document.getElementById('prepostChart'),{
+  type:'bar',
+  data:{
+    labels:['Entered below 1.0','Entered above 1.0'],
+    datasets:[
+      {label:'Pre Beta', data:[0.851,1.195],backgroundColor:'rgba(139,58,42,.5)',borderColor:RUST,borderWidth:1.5},
+      {label:'Post Beta',data:[1.123,1.315],backgroundColor:'rgba(74,92,78,.6)', borderColor:SAGE,borderWidth:1.5}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{labels:{boxWidth:10,padding:16,color:'rgba(200,207,201,.6)'}},
+      tooltip:{...TIP,callbacks:{label:ctx=>` β ${ctx.raw.toFixed(3)}`}}
+    },
+    scales:{
+      x:{grid:{color:P2},ticks:{color:'rgba(200,207,201,.4)'}},
+      y:{min:.6,max:1.5,grid:{color:P2},ticks:{callback:v=>'β '+v.toFixed(2),color:'rgba(200,207,201,.4)'}}
+    }
+  },
+  plugins:[threshPlugin]
+});
+
+// ── LEVEL TREND CHART (BP DC CM over years) ───────────────────────────────
+new Chart(document.getElementById('levelTrendChart'),{
+  type:'line',
+  data:{
+    labels:YRS.map(d=>d.y),
+    datasets:[
+      {label:'BP %',data:YRS.map(d=>d.bp),borderColor:'rgba(46,111,171,.9)',backgroundColor:'rgba(46,111,171,.1)',borderWidth:1.8,pointRadius:2,tension:.3,fill:false},
+      {label:'DC %',data:YRS.map(d=>d.dc),borderColor:'rgba(139,58,42,.9)',backgroundColor:'rgba(139,58,42,.1)',borderWidth:1.8,pointRadius:2,tension:.3,fill:false},
+      {label:'CM %',data:YRS.map(d=>d.cm),borderColor:'rgba(74,148,99,.9)',backgroundColor:'rgba(74,148,99,.1)',borderWidth:1.8,pointRadius:2,tension:.3,fill:false},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{boxWidth:10,padding:12,color:'rgba(200,207,201,.6)'}},tooltip:{...TIP,callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.raw.toFixed(1)}%`}}},
+    scales:{x:{grid:{color:P2},ticks:{color:'rgba(200,207,201,.4)'}},y:{min:30,max:70,grid:{color:P2},ticks:{callback:v=>v+'%',color:'rgba(200,207,201,.4)'}}}
+  }
+});
+
+// ── PILLAR CHART ──────────────────────────────────────────────────────────
+new Chart(document.getElementById('pillarChart'),{
+  type:'bar',
+  data:{
+    labels:['Brain & Physiology','Daily Challenges','Critical Moments'],
+    datasets:[{label:'Pre-assessment avg %',data:[53.4,43.1,40.0],
+      backgroundColor:['rgba(46,111,171,.6)','rgba(139,58,42,.6)','rgba(74,92,78,.6)'],
+      borderColor:['#2E6FAB',RUST,SAGE],borderWidth:1.5}]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,indexAxis:'y',
+    plugins:{legend:{display:false},tooltip:{...TIP,callbacks:{label:ctx=>` ${ctx.raw.toFixed(1)}%`}}},
+    scales:{x:{min:0,max:75,grid:{color:P2},ticks:{callback:v=>v+'%',color:'rgba(200,207,201,.4)'}},y:{grid:{color:P2},ticks:{color:'rgba(200,207,201,.4)'}}}
+  }
+});
+
+// ── YEAR TABLE ────────────────────────────────────────────────────────────
+const tbody=document.getElementById('ytbody');
+YRS.forEach(r=>{
+  const sc=r.s==='Legacy'?'src-l':(r.s==='DB'?'src-d':'src-n');
+  const bc=r.b>=1.0?'beta-up':'beta-dn';
+  tbody.innerHTML+=`<tr>
+    <td>${r.y}</td>
+    <td class="${bc}">β ${r.b.toFixed(3)}</td>
+    <td>${r.m.toFixed(1)}%</td>
+    <td style="color:rgba(106,171,240,.8)">${r.bp.toFixed(1)}</td>
+    <td style="color:rgba(224,96,96,.8)">${r.dc.toFixed(1)}</td>
+    <td style="color:rgba(122,196,154,.8)">${r.cm.toFixed(1)}</td>
+  </tr>`;
+});
+</script>
+</body>
+</html>
