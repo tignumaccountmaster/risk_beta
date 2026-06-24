@@ -190,6 +190,48 @@ footer span{font-size:1.0rem;letter-spacing:.1em;opacity:.3;color:var(--paper)}
   section{padding:5rem 1.5rem!important}
   .corr-stat{grid-template-columns:1fr}
 }
+
+.scale-graph{background:var(--paper);border:1px solid rgba(10,10,8,.08);padding:2rem 2rem 1.5rem}
+.sg-title{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+.sg-caption{font-size:.88rem;line-height:1.7;opacity:.65;margin-top:1rem;max-width:520px}
+
+@media(max-width:900px){.im-grid{grid-template-columns:1fr!important}}
+
+.beta-body p{font-size:1.04rem;line-height:1.9;opacity:.75;margin-bottom:1.2rem}
+@media(max-width:900px){#beta-section{padding:5rem 1.5rem!important}.beta-states{grid-template-columns:1fr!important}}
+
+.rm-body p{font-size:1.04rem;line-height:1.9;opacity:.75;margin-bottom:1.2rem}
+@media(max-width:900px){#risk-mgmt{padding:5rem 1.5rem!important}.rm-refs{grid-template-columns:1fr!important}}
+
+.data-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;margin-bottom:3rem;padding-bottom:2.5rem;border-bottom:1px solid rgba(245,242,235,.12)}
+.ds-item{display:flex;flex-direction:column;gap:.4rem}
+.ds-num{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,4vw,3.2rem);font-weight:300;line-height:1;color:var(--gl)}
+.ds-label{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;opacity:.55}
+@media(max-width:900px){.data-stats{grid-template-columns:1fr 1fr;gap:1.5rem}}
+
+.dashboard-header-single{margin-bottom:4rem}
+.insight-block{margin-bottom:4rem;padding-bottom:3.5rem;border-bottom:1px solid rgba(245,242,235,.12)}
+.insight-lead{font-family:'Cormorant Garamond',serif;font-size:clamp(1.4rem,2.5vw,2rem);font-weight:300;line-height:1.4;max-width:760px;margin-bottom:3rem;opacity:.9}
+.insight-patterns{display:grid;grid-template-columns:repeat(3,1fr);gap:3rem}
+.ip-num{font-family:'DM Mono';font-size:.72rem;letter-spacing:.2em;color:var(--gl);opacity:.7;margin-bottom:1rem}
+.ip-head{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;line-height:1.3;margin-bottom:.9rem}
+.insight-patterns p{font-size:.92rem;line-height:1.75;opacity:.65}
+@media(max-width:900px){.insight-patterns{grid-template-columns:1fr;gap:2.2rem}}
+@media(max-width:900px){.context-grid,.rm-grid,.beta-grid{grid-template-columns:1fr!important;gap:2.5rem!important}}
+
+/* 0-2 scale graph animation */
+.sg-svg .sg-axis{stroke-dasharray:460;stroke-dashoffset:460;transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1)}
+.sg-svg .sg-zone{transform:scaleX(0);transition:transform .9s cubic-bezier(.4,0,.2,1) .5s}
+/* text & ticks fade in as a group via the svg's own opacity stages */
+.sg-svg .sg-fade{opacity:0;transition:opacity .7s ease .9s}
+.sg-svg .sg-fade.sg-fade-d1{transition-delay:1.15s}
+.sg-svg .sg-marker{opacity:0;transform:translateY(-10px);transition:opacity .5s ease 1.5s,transform .6s cubic-bezier(.34,1.56,.64,1) 1.5s}
+.scale-graph.animate .sg-axis{stroke-dashoffset:0}
+.scale-graph.animate .sg-zone{transform:scaleX(1)}
+.scale-graph.animate .sg-fade{opacity:1}
+.scale-graph.animate .sg-marker{opacity:1;transform:translateY(0)}
+.scale-graph.animate .sg-num-dim{opacity:.7}
+.scale-graph.animate .sg-lbl-dim{opacity:.55}
 </style>
 
 <style>
@@ -225,30 +267,9 @@ footer span{font-size:1.0rem;letter-spacing:.1em;opacity:.3;color:var(--paper)}
   <div class="hero-content">
     <p class="hero-eyebrow">Readiness Risk Beta · Data Overview · 2026</p>
     <h1 class="hero-headline">One number. Two states.<br><em>Fifteen years</em> of proof.</h1>
-    <p class="hero-sub">The Readiness Risk Beta tells you whether a leadership team is multiplying performance or quietly draining it — drawn from 2.8 million data points across 64,697 assessments. Not a wellness score. A signal.</p>
+    <p class="hero-sub">Every strategy, every transaction, every critical decision routes through one place. The cognitive and emotional state of the executive making it.</p>
   </div>
-  <div class="hero-meta">
-    <div class="hero-stat">
-      <span class="hero-stat-num">2.8M</span>
-      <span class="hero-stat-label">Data Points</span>
-      
-    </div>
-    <div class="hero-stat" style="padding-left:2rem">
-      <span class="hero-stat-num">82.6%</span>
-      <span class="hero-stat-label">Improved Readiness Risk</span>
-      
-    </div>
-    <div class="hero-stat" style="padding-left:2rem">
-      <span class="hero-stat-num">64,697</span>
-      <span class="hero-stat-label">Assessments measured</span>
-      
-    </div>
-    <div class="hero-stat" style="padding-left:2rem">
-      <span class="hero-stat-num">15</span>
-      <span class="hero-stat-label">Years of data</span>
-      
-    </div>
-  </div>
+  
   <div class="scroll-cue"><div class="scroll-line"></div><span>Scroll</span></div>
 </section>
 
@@ -260,204 +281,190 @@ footer span{font-size:1.0rem;letter-spacing:.1em;opacity:.3;color:var(--paper)}
 </div>
 <!-- ── EXCURSION: BUSINESS CASE ─────────────────────────────────────────── -->
 <section id="business-case" style="background:var(--bone);padding:8rem 3rem;min-height:auto">
-  <div class="bc-top-grid reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center;margin-bottom:5rem">
-    <div>
-      <div class="section-label">Excursion — Business Case</div>
-      <h2 class="section-headline" style="margin-bottom:1.5rem">Human Performance Beta as a <em>risk management instrument.</em></h2>
-      <p style="font-size:1.04rem;line-height:1.9;opacity:.7">Risk management means identifying and analysing risk in an investment — and every project a client runs is an investment. It evaluates both upsides (gains) and downsides (leaks) against project goals. At its core, risk is the probability of a loss, measured using statistical methods. One of those methods is called Beta.</p>
+  <div style="max-width:780px">
+    <div class="section-label">01 — The Context</div>
+    <h2 class="section-headline" style="margin-bottom:1.5rem">Personal Readiness Index: a human performance <em>risk management instrument.</em></h2>
+  </div>
+  <div class="context-grid reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:5rem;margin-top:2.5rem;align-items:start">
+    <div class="context-col" style="max-width:620px">
+      <p style="font-size:1.04rem;line-height:1.9;opacity:.7">Every strategy, every transaction, every critical decision routes through one place. The cognitive and emotional state of the executive making it.</p><p style="font-size:1.04rem;line-height:1.9;opacity:.7;margin-top:1.2rem">That state is not fixed. It builds, and it drains. Under load, AI-driven acceleration, complexity, and uncertainty, it degrades. And it shapes the quality of an outcome more than any framework, program, or advisory engagement layered on top of it. This is the layer almost everyone ignores. Leadership programs sharpen strategy. Business coaching sharpens thinking. Neither one measures the human state that decides whether any of it actually lands.</p><p style="font-size:1.04rem;line-height:1.9;opacity:.7;margin-top:1.2rem">TIGNUM has spent over twenty years building the infrastructure to do exactly that. To diagnose this state, recalibrate it, prime it for the moments that matter, and prove the return.</p><p style="font-size:1.04rem;line-height:1.9;opacity:.7;margin-top:1.2rem">The Personal Readiness Index is that instrument. It measures an executive’s readiness state against twenty years of correlated behavioral, physiological, and performance data.</p><p style="font-size:1.04rem;line-height:1.9;opacity:.7;margin-top:1.2rem">It makes the invisible foundation of performance visible. And measurable.</p>
     </div>
-    <div style="padding:3rem 2.5rem;background:var(--ink);color:var(--paper);text-align:center;position:relative;overflow:hidden">
-      <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(245,242,235,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(245,242,235,.03) 1px,transparent 1px);background-size:60px 60px"></div>
-      <div style="position:relative;z-index:2">
-        <div style="font-size:.82rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem">The TIGNUM Impact Formula</div>
-        <div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:1rem;margin-bottom:2rem">
-          <span style="font-family:'Reenie Beanie',cursive;font-size:clamp(3rem,5.5vw,4.8rem);font-weight:300;color:rgba(245,242,235,.25)">(</span>
-          <div style="text-align:center">
-            <div style="font-family:'Reenie Beanie',cursive;font-size:clamp(1.9rem,3.4vw,2.8rem);font-weight:300;font-style:italic;color:var(--gl);line-height:1.0">Functional<br>Readiness</div>
-          </div>
-          <span style="font-family:'Reenie Beanie',cursive;font-size:clamp(2.4rem,4vw,3.4rem);font-weight:300;color:var(--gold)">+</span>
-          <div style="text-align:center">
-            <div style="font-family:'Reenie Beanie',cursive;font-size:clamp(1.9rem,3.4vw,2.8rem);font-weight:300;font-style:italic;color:var(--gl);line-height:1.0">Role<br>Readiness</div>
-          </div>
-          <span style="font-family:'Reenie Beanie',cursive;font-size:clamp(3rem,5.5vw,4.8rem);font-weight:300;color:rgba(245,242,235,.25)">)</span>
-          <span style="font-family:'Reenie Beanie',cursive;font-size:clamp(2.4rem,4vw,3.4rem);font-weight:300;color:var(--gold)">×</span>
-          <div style="text-align:center;padding:.6rem 1.3rem;border:1px solid var(--gold);background:rgba(184,147,90,.08)">
-            <div style="font-family:'Reenie Beanie',cursive;font-size:clamp(1.9rem,3.4vw,2.8rem);font-weight:300;font-style:italic;color:var(--gold);line-height:1.0">Personal<br>Readiness</div>
-          </div>
-          <span style="font-family:'Reenie Beanie',cursive;font-size:clamp(2.6rem,4.5vw,4rem);font-weight:300;color:var(--gold)">=</span>
-          <span style="font-family:'Reenie Beanie',cursive;font-size:clamp(2.6rem,4.5vw,4rem);font-weight:300;color:var(--paper)">Impact</span>
+    <div class="measures-col" style="max-width:620px">
+      <p style="font-size:1.04rem;line-height:1.9;opacity:.7;margin-bottom:2rem">The Index reads Personal Readiness across the three levels that decide how an executive shows up:</p>
+      <div class="im-grid" style="display:flex;flex-direction:column;gap:2px;margin-bottom:2rem">
+        <div style="background:var(--paper);padding:1.8rem 1.6rem;border-top:3px solid var(--bp)">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;margin-bottom:.6rem;color:var(--bp)">Brain and Physiology</div>
+          <p style="font-size:.92rem;line-height:1.75;opacity:.75">How resilient you are, how balanced your nervous system is, and what your level of pain and tension is. The foundation underneath everything else.</p>
         </div>
-        <p style="font-size:.95rem;line-height:1.85;opacity:.5;max-width:420px;margin:0 auto">A leader can have deep functional expertise and a well-defined role — but those combine into impact only through their Personal Readiness. The Readiness Risk Beta is how we measure that multiplier: below 1.0, it diminishes everything else the leader brings.</p>
+        <div style="background:var(--paper);padding:1.8rem 1.6rem;border-top:3px solid var(--dc)">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;margin-bottom:.6rem;color:var(--dc)">Daily Challenges</div>
+          <p style="font-size:.92rem;line-height:1.75;opacity:.75">How you handle mindset killers, how recharged and fueled you are, and how adaptable you stay across a demanding day.</p>
+        </div>
+        <div style="background:var(--paper);padding:1.8rem 1.6rem;border-top:3px solid var(--cm)">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;margin-bottom:.6rem;color:var(--cm)">Critical Moments</div>
+          <p style="font-size:.92rem;line-height:1.75;opacity:.75">How mentally agile you are, how focused you are, and how well you multiply energy when the stakes are highest.</p>
+        </div>
       </div>
+      <p style="font-size:.96rem;line-height:1.8;opacity:.7">Each client receives a clear score per level, and one overall Personal Readiness score. A baseline you can act on, and return to.</p>
     </div>
+    
   </div>
 
   
 
-
-
-  <!-- TWO COLUMN: FINANCE BETA vs TIGNUM BETA -->
-  <div class="bc-two" style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:5rem">
-    <div style="background:var(--paper);padding:3rem;border:1px solid var(--bone)">
-      <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mist);margin-bottom:1.5rem">In finance</div>
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;margin-bottom:1.5rem;line-height:1.2">Beta measures volatility<br>relative to the market</h3>
-      <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem">
-        <div style="display:flex;align-items:baseline;gap:1rem;padding:.8rem 0;border-bottom:1px solid var(--bone)">
-          <span style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--gold);width:3.5rem;flex-shrink:0">β = 1</span>
-          <span style="font-size:1.04rem;opacity:.65;line-height:1.7">The market. The benchmark. Exactly average volatility. All investments are measured against this.</span>
-        </div>
-        <div style="display:flex;align-items:baseline;gap:1rem;padding:.8rem 0;border-bottom:1px solid var(--bone)">
-          <span style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--rust);width:3.5rem;flex-shrink:0">β &gt; 1</span>
-          <span style="font-size:1.04rem;opacity:.65;line-height:1.7">More volatile than the market. Higher potential return — but higher risk of loss.</span>
-        </div>
-        <div style="display:flex;align-items:baseline;gap:1rem;padding:.8rem 0">
-          <span style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--sage);width:3.5rem;flex-shrink:0">β &lt; 1</span>
-          <span style="font-size:1.04rem;opacity:.65;line-height:1.7">Less volatile than the market. Lower risk — but also lower upside potential.</span>
-        </div>
-      </div>
-      <p style="font-size:.86rem;line-height:1.8;opacity:.55;padding-top:1rem;border-top:1px solid var(--bone)">The two risk types: <strong style="opacity:.8">Systematic risk</strong> affects everyone — a pandemic, a financial crisis, a market shock. <strong style="opacity:.8">Unsystematic risk</strong> is specific to a company or team — poor leadership, misaligned culture, performance drain.</p>
-    </div>
-    <div style="background:var(--ink);color:var(--paper);padding:3rem">
-      <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem">The TIGNUM inversion</div>
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--paper);margin-bottom:1.5rem;line-height:1.2">Human Performance Beta<br>runs the other way</h3>
-      <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem">
-        <div style="display:flex;align-items:baseline;gap:1rem;padding:.8rem 0;border-bottom:1px solid rgba(245,242,235,.08)">
-          <span style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--gold);width:3.5rem;flex-shrink:0">β = 1</span>
-          <span style="font-size:1.04rem;opacity:.6;line-height:1.7">The performance benchmark. The minimum standard for a team entering a critical project.</span>
-        </div>
-        <div style="display:flex;align-items:baseline;gap:1rem;padding:.8rem 0;border-bottom:1px solid rgba(245,242,235,.08)">
-          <span style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:#4a9463;width:3.5rem;flex-shrink:0">β &gt; 1</span>
-          <span style="font-size:1.04rem;opacity:.6;line-height:1.7">Multiplying. The team generates more capacity than it consumes. This is where you want to be.</span>
-        </div>
-        <div style="display:flex;align-items:baseline;gap:1rem;padding:.8rem 0">
-          <span style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:#c05040;width:3.5rem;flex-shrink:0">β &lt; 1</span>
-          <span style="font-size:1.04rem;opacity:.6;line-height:1.7">Diminishing. The team is a performance liability. Lower beta = higher risk to the project.</span>
-        </div>
-      </div>
-      <p style="font-size:.86rem;line-height:1.8;opacity:.45;padding-top:1rem;border-top:1px solid rgba(245,242,235,.08)">The inversion is intentional and important. In finance, you avoid high beta if you want safety. In human performance, you <em style="color:var(--gl)">pursue</em> high beta. A CFO can hold both concepts simultaneously — they are measuring the same underlying thing (risk relative to a benchmark) from opposite directions.</p>
-    </div>
+  </section><!-- ── THRESHOLD ──────────────────────────────────────────────────────────── -->
+<!-- ═══════════════ 03 — RISK MANAGEMENT ═══════════════ -->
+<section id="risk-mgmt" style="background:var(--paper);padding:8rem 3rem">
+  <div style="max-width:780px">
+    <div class="section-label reveal">02 — Personal Readiness and Risk Management</div>
+    <h2 class="section-headline reveal" style="margin-bottom:2rem">A risk profile, moved to where it <em>actually lives.</em></h2>
   </div>
-
-  <!-- TWO RISK TYPES -->
-  <div style="margin-bottom:5rem">
-    <div class="section-label reveal" style="margin-bottom:2rem">Both risk types, measured</div>
-    <div class="bc-two" style="display:grid;grid-template-columns:1fr 1fr;gap:2px">
-      <div style="background:var(--paper);padding:3rem;border:1px solid var(--bone);position:relative;overflow:hidden">
-        <div style="position:absolute;right:2rem;bottom:-1rem;font-family:'Cormorant Garamond',serif;font-size:8rem;font-weight:300;color:rgba(184,147,90,.05);line-height:1;pointer-events:none">S</div>
-        <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:white;display:inline-block;padding:.25rem .7rem;margin-bottom:1.2rem">Systematic Risk</div>
-        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;margin-bottom:1rem">Readiness for what nobody sees coming</h3>
-        <p style="font-size:1.04rem;line-height:1.85;opacity:.65">Systematic risk hits everyone simultaneously — a pandemic, a geopolitical shock, a market collapse. The question is not whether it will happen but whether the leadership team has the capacity to adapt when it does.<br><br>The TIGNUM instrument captures this through <strong>agility and adaptability behaviours</strong> — specifically the Daily Challenges and Critical Moments levels, which measure how leaders perform under unexpected constraint and pressure.</p>
-      </div>
-      <div style="background:var(--paper);padding:3rem;border:1px solid var(--bone);position:relative;overflow:hidden">
-        <div style="position:absolute;right:2rem;bottom:-1rem;font-family:'Cormorant Garamond',serif;font-size:8rem;font-weight:300;color:rgba(184,147,90,.05);line-height:1;pointer-events:none">U</div>
-        <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:white;display:inline-block;padding:.25rem .7rem;margin-bottom:1.2rem">Unsystematic Risk</div>
-        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;margin-bottom:1rem">Readiness within the team and the project</h3>
-        <p style="font-size:1.04rem;line-height:1.85;opacity:.65">Unsystematic risk is specific to a team or organisation — it can be reduced through deliberate action. This is where TIGNUM operates most directly.<br><br>The instrument captures this through <strong>energy multiplication, performance resilience, and self-observation behaviours</strong> — the dimensions that determine whether a team amplifies or drains collective capacity under project pressure.</p>
-      </div>
+  <div class="rm-grid reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:5rem;margin-top:2.5rem;align-items:start">
+    <div class="rm-body" style="max-width:620px">
+      <p>Risk management means identifying and analyzing risk in an investment. And every project a client runs is an investment. It weighs the upside, the gains, against the downside, the leaks, measured against the project’s goals. At its core, risk is the probability of a loss.</p>
+      <p>We took that logic and moved it to where it actually lives. Inside the human running the project. An executive on a company’s value agenda carries a risk profile, the same way an asset does. The Beta is how we express it.</p>
     </div>
-  </div>
-
-  <!-- THE BENCHMARK -->
-  <div style="background:var(--ink);color:var(--paper);padding:4rem">
-    <div class="bc-two" style="display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start">
-      <div>
-        <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;display:flex;align-items:center;gap:.8rem"><span style="width:1.5rem;height:1px;background:var(--gold);display:inline-block"></span>The benchmark</div>
-        <h3 style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--paper);line-height:1.15;margin-bottom:1.5rem">The project readiness<br>standard: <em style="color:var(--gl)">62.5%</em></h3>
-        <p style="font-size:1.04rem;line-height:1.9;opacity:.55;margin-bottom:1.5rem">While β 1.0 anchors to the population median (42%), expert judgment places the minimum readiness for critical project work at 62.5% — a score that on the beta scale equates to approximately β 1.49. This is a separate aspirational benchmark, not a second threshold.</p>
-        <p style="font-size:1.04rem;line-height:1.9;opacity:.55">Under this standard, only <strong style="color:var(--gl)">13.1%</strong> of leaders currently meet or exceed the benchmark on their first assessment. This may feel intentional — but it is not. It is a real statement about a real risk. The 62.5% threshold is where the instrument reliably predicts the performance capacity that high-stakes leadership genuinely requires.</p>
-      </div>
-      <div>
-        <div style="font-size:.86rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem;display:flex;align-items:center;gap:.8rem"><span style="width:1.5rem;height:1px;background:var(--gold);display:inline-block"></span>Note on the two standards</div>
-        <div style="display:flex;flex-direction:column;gap:2px">
-          <div style="padding:1.5rem;border:1px solid rgba(245,242,235,.08)">
-            <div style="font-size:.60rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gl);margin-bottom:.5rem">The threshold — population median</div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;margin-bottom:.5rem">41.5% = β 1.0</div>
-            <div style="font-size:1.0rem;opacity:.45;line-height:1.7">50% of leaders are above, 50% below by construction. Every beta in the dataset is anchored here. Crossing 1.0 means moving beyond the global pre-intervention median.</div>
-          </div>
-          <div style="padding:1.5rem;border:1px solid rgba(184,147,90,.3);background:rgba(184,147,90,.05)">
-            <div style="font-size:.60rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gl);margin-bottom:.5rem">Project readiness standard (aspirational)</div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--gl);margin-bottom:.5rem">62.5% ≈ β 1.49</div>
-            <div style="font-size:1.0rem;opacity:.55;line-height:1.7">Where expert judgment places the minimum for high-stakes project work. Only 13.1% of leaders meet this on first assessment. Not a competing threshold — a separate aspirational benchmark on the same scale.</div>
-          </div>
+    <div class="rm-refs-col" style="max-width:620px">
+      <p style="opacity:.7;margin:0 0 1.5rem;text-transform:uppercase;font-size:.82rem;letter-spacing:.2em;color:var(--gold)">Two reference points make the Beta readable</p>
+      <div class="rm-refs" style="display:flex;flex-direction:column;gap:2px">
+        <div style="background:var(--bone);padding:2.2rem 2rem;border-top:3px solid var(--gold)">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:400;margin-bottom:.8rem">The benchmark</div>
+          <p style="font-size:.96rem;line-height:1.8;opacity:.75">Thousands of business professionals, scored across twenty years of data. This is the &ldquo;market&rdquo; every individual is measured against.</p>
+        </div>
+        <div style="background:var(--bone);padding:2.2rem 2rem;border-top:3px solid var(--ink)">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:400;margin-bottom:.8rem">The threshold</div>
+          <p style="font-size:.96rem;line-height:1.8;opacity:.75">The number 1. Above it, you multiply. Below it, you leak.</p>
         </div>
       </div>
-    </div>
-  </div>
-
-  
-</section><!-- ── THRESHOLD ──────────────────────────────────────────────────────────── -->
-<section id="threshold" style="background:var(--bone)">
-  <div>
-    <div class="section-label reveal">01 — The Threshold</div>
-    <h2 class="section-headline reveal reveal-delay-1">Below 1.0, leaders cost more than they <em>produce.</em></h2>
-    <div class="threshold-states">
-      <div class="threshold-state dim reveal reveal-delay-2">
-        <div class="ts-val dim">β &lt; 1.0</div>
-        <div class="ts-label">Diminishing</div>
-        <p class="ts-desc">The leader is consuming more performance capacity than they generate. Decision quality degrades under pressure. The cost to the organisation is invisible — until it materialises in a deal, a decision, or a departure.</p>
-      </div>
-      <div class="threshold-state reveal reveal-delay-3" style="background:var(--paper);border:1px solid rgba(10,10,8,.08);text-align:center;padding:.8rem 2rem">
-        <span style="font-size:1.0rem;letter-spacing:.2em;opacity:.4">— THRESHOLD  1.0 —</span>
-      </div>
-      <div class="threshold-state mult reveal reveal-delay-4">
-        <div class="ts-val mult">β &gt; 1.0</div>
-        <div class="ts-label">Multiplying</div>
-        <p class="ts-desc">The leader generates more performance capacity than they consume. Greater mental agility, faster recalibration under pressure, sustained clarity. They become the energy source for everyone around them — elevating teams, decisions, and every room they walk into.</p>
-      </div>
-    </div>
-  </div>
-  <div class="threshold-right">
-    <div class="section-label reveal">Pre-assessment anchor</div>
-    <p class="reveal reveal-delay-1" style="font-size:1.04rem;line-height:1.9;opacity:.7;margin-bottom:2rem">The 1.0 threshold is the historical median of all 38,686 pre-assessments — the very first assessment each leader ever completes, before any TIGNUM intervention. That median corresponds to a raw score of 42% on the assessment scale. The beta conversion (score ÷ 2.5 × 0.9399) maps that 42% to exactly 1.0 — so the two numbers describe the same point, expressed on different scales. Crossing 1.0 means moving beyond the global pre-intervention baseline. Because the assessment instrument was redesigned in 2023 (expanding from 42 to 51 questions with revised wording), each instrument generation is normalised to its own pre-assessment median. This keeps β 1.0 meaningful within each era and prevents the instrument change from appearing as a performance shift. Betas are directly comparable within an instrument generation; across the 2023 boundary they should be read with this in mind.</p>
-    <p class="reveal reveal-delay-2" style="font-size:1.04rem;line-height:1.9;opacity:.7">When individual betas are averaged across a leadership team, the result is the team beta — a single number that reflects the collective readiness of the group. A team beta below 1.0 is a measurable statement that this team, at this moment, is operating below the performance median of all leaders TIGNUM has ever measured on their first day.</p>
-    <div class="param-table reveal reveal-delay-3">
-      <div class="param-row">
-        <div class="param-name">Conversion Factor (Score ÷ 2.5)</div>
-        <div class="param-val">2.50</div>
-      </div>
-      <div class="param-row">
-        <div class="param-name">Pre Median Score (1–5 scale)</div>
-        <div class="param-val">2.660</div>
-      </div>
-      <div class="param-row">
-        <div class="param-name">Pre Raw Beta Median</div>
-        <div class="param-val">1.064</div>
-      </div>
-      <div class="param-row">
-        <div class="param-name">Normalisation Factor</div>
-        <div class="param-val">0.9399</div>
-      </div>
-      <div class="param-row">
-        <div class="param-name">Pre assessments in normalisation</div>
-        <div class="param-val">38,686</div>
-      </div>
-    </div>
-    <div class="blind-spot-box reveal reveal-delay-4">
-      <p>"Every team TIGNUM has ever worked with entered below the performance threshold. None stayed there."</p>
-      <div class="attribution">TIGNUM Research · 15 years · 64,697 assessments</div>
     </div>
   </div>
 </section>
+
+<!-- ═══════════════ 02 — THE BETA ═══════════════ -->
+<section id="beta-section" style="background:var(--bone);padding:8rem 3rem">
+  <div style="max-width:780px">
+    <div class="section-label reveal">03 — The Personal Readiness Risk Beta</div>
+    <h2 class="section-headline reveal" style="margin-bottom:2rem">Knowing a score is useful. Knowing what it does to performance is <em>the point.</em></h2>
+  </div>
+  <div class="beta-grid reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:5rem;margin-top:2.5rem;align-items:start">
+    <div class="beta-intro" style="max-width:620px">
+      <div class="beta-body reveal" style="max-width:none">
+      <p>This is where the Beta comes in. We borrow one idea from the world of risk. A single number that tells you whether something amplifies what it touches, or quietly erodes it.</p>
+      <p>For over twenty years, TIGNUM has gathered millions of data points before and after our support. Physiological markers, Sustainable Human Performance behaviors, behavioral styles, mindset killers, physical, cognitive, and emotional load, plus coaching requests and progress.</p>
+      <p>We normalize all of it onto a simple 0 to 2 scale. The Risk Beta represents the average variance of an individual’s or a team’s Personal Readiness, measured against the &ldquo;market&rdquo; of thousands of professionals in the business world.</p>
+    </div>
+    </div>
+    <div class="beta-right" style="max-width:620px">
+      <div class="scale-graph reveal reveal-delay-2">
+      <div class="sg-title">The 0–2 scale</div>
+      <svg viewBox="0 0 560 230" style="width:100%;height:auto;display:block" class="sg-svg">
+        <!-- zone fills -->
+        <rect class="sg-zone sg-zone-l" x="50" y="91" width="230" height="8" fill="rgba(139,58,42,.18)" style="transform-origin:280px 95px"/>
+        <rect class="sg-zone sg-zone-r" x="280" y="91" width="230" height="8" fill="rgba(74,92,78,.22)" style="transform-origin:280px 95px"/>
+        <!-- axis line -->
+        <line class="sg-axis" x1="50" y1="95" x2="510" y2="95" stroke="rgba(10,10,8,.25)" stroke-width="1.5"/>
+        <!-- endpoint ticks 0,1,2 -->
+        <line class="sg-fade" x1="50" y1="85" x2="50" y2="105" stroke="rgba(10,10,8,.4)" stroke-width="2"/>
+        <line class="sg-fade" x1="280" y1="81" x2="280" y2="109" stroke="rgba(10,10,8,.55)" stroke-width="2"/>
+        <line class="sg-fade" x1="510" y1="85" x2="510" y2="105" stroke="rgba(10,10,8,.4)" stroke-width="2"/>
+        <!-- big numbers -->
+        <text class="sg-fade sg-num-dim" x="50" y="73" text-anchor="middle" font-family="'Cormorant Garamond',serif" font-size="34" fill="#0a0a08">0</text>
+        <text class="sg-fade" x="280" y="69" text-anchor="middle" font-family="'Cormorant Garamond',serif" font-size="40" fill="#0a0a08">1</text>
+        <text class="sg-fade sg-num-dim" x="510" y="73" text-anchor="middle" font-family="'Cormorant Garamond',serif" font-size="34" fill="#0a0a08">2</text>
+        <!-- zone labels -->
+        <text class="sg-fade sg-fade-d1" x="165" y="135" text-anchor="middle" font-family="'DM Mono'" font-size="12" letter-spacing="2" fill="#8b3a2a">DIMINISHING</text>
+        <text class="sg-fade sg-fade-d1 sg-lbl-dim" x="165" y="156" text-anchor="middle" font-family="'DM Mono'" font-size="9" fill="#0a0a08" opacity=".55">Negative KPI &amp; project effect</text>
+        <text class="sg-fade sg-fade-d1 sg-lbl-dim" x="165" y="170" text-anchor="middle" font-family="'DM Mono'" font-size="9" fill="#0a0a08" opacity=".55">Rising burnout risk</text>
+        <text class="sg-fade sg-fade-d1" x="395" y="135" text-anchor="middle" font-family="'DM Mono'" font-size="12" letter-spacing="2" fill="#4a5c4e">MULTIPLYING</text>
+        <text class="sg-fade sg-fade-d1 sg-lbl-dim" x="395" y="156" text-anchor="middle" font-family="'DM Mono'" font-size="9" fill="#0a0a08" opacity=".55">Positive KPI &amp; project effect</text>
+        <text class="sg-fade sg-fade-d1 sg-lbl-dim" x="395" y="170" text-anchor="middle" font-family="'DM Mono'" font-size="9" fill="#0a0a08" opacity=".55">Increased resilience</text>
+        <!-- 0.85 marker -->
+        <line class="sg-marker" x1="245.5" y1="49" x2="245.5" y2="89" stroke="#b8935a" stroke-width="1.5"/>
+        <circle class="sg-marker" cx="245.5" cy="95" r="4.5" fill="#b8935a"/>
+        <text class="sg-marker" x="245.5" y="43" text-anchor="middle" font-family="'DM Mono'" font-size="13" fill="#b8935a" font-weight="500">0.85</text>
+      </svg>
+      <p class="sg-caption">A score of 1 is neutral. Personal Readiness neither adds nor subtracts. You perform at expectation. A score equal to 1 yields a neutral impact on the performance equation. So a Beta of e.g. 0.85 is not a bad grade. It is a quantified leak. It says this executive is currently operating at a discount, both to their own capability, and to the benchmark. That gap is the opportunity.</p>
+    </div>
+      
+      
+      
+    </div>
+  </div>
+  <div class="beta-states reveal" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin:4rem 0 2.5rem">
+      <div style="background:var(--paper);padding:2.2rem 1.8rem;border-top:3px solid var(--rust)">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;margin-bottom:.6rem;color:var(--rust)">Below 1 is Diminishing</div>
+        <p style="font-size:.92rem;line-height:1.75;opacity:.7">A negative effect on KPIs, a negative effect on projects, and a rising burnout risk.</p>
+      </div>
+      <div style="background:var(--paper);padding:2.2rem 1.8rem;border-top:3px solid var(--cm)">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;margin-bottom:.6rem">A score of 1 is neutral</div>
+        <p style="font-size:.92rem;line-height:1.75;opacity:.7">Personal Readiness neither adds nor subtracts. You perform at expectation.</p>
+      </div>
+      <div style="background:var(--paper);padding:2.2rem 1.8rem;border-top:3px solid var(--sage)">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;margin-bottom:.6rem;color:var(--sage)">Above 1 is Multiplying</div>
+        <p style="font-size:.92rem;line-height:1.75;opacity:.7">A positive effect on KPIs, a positive effect on projects, and increased resilience.</p>
+      </div>
+    </div>
+  
+  <div class="beta-equation reveal" style="background:var(--ink);color:var(--paper);padding:3rem 2.5rem;text-align:center;margin-top:4rem">
+      <div style="font-size:.82rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem">The impact equation</div>
+      <div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+        <span style="font-family:'Reenie Beanie',cursive;font-size:clamp(1.9rem,3.4vw,2.8rem);font-weight:300;font-style:italic;color:var(--paper)">Impact</span>
+        <span style="font-family:'Reenie Beanie',cursive;font-size:clamp(2.4rem,4vw,3.4rem);font-weight:300;color:var(--gold)">=</span>
+        <span style="font-family:'Reenie Beanie',cursive;font-size:clamp(3rem,5.5vw,4.8rem);font-weight:300;color:rgba(245,242,235,.25)">(</span>
+        <div style="text-align:center"><div style="font-family:'Reenie Beanie',cursive;font-size:clamp(1.9rem,3.4vw,2.8rem);font-weight:300;font-style:italic;color:var(--gl);line-height:1.0">Functional<br>Readiness</div></div>
+        <span style="font-family:'Reenie Beanie',cursive;font-size:clamp(2.4rem,4vw,3.4rem);font-weight:300;color:var(--gold)">+</span>
+        <div style="text-align:center"><div style="font-family:'Reenie Beanie',cursive;font-size:clamp(1.9rem,3.4vw,2.8rem);font-weight:300;font-style:italic;color:var(--gl);line-height:1.0">Role<br>Readiness</div></div>
+        <span style="font-family:'Reenie Beanie',cursive;font-size:clamp(3rem,5.5vw,4.8rem);font-weight:300;color:rgba(245,242,235,.25)">)</span>
+        <span style="font-family:'Reenie Beanie',cursive;font-size:clamp(2.4rem,4vw,3.4rem);font-weight:300;color:var(--gold)">×</span>
+        <div style="text-align:center;padding:.6rem 1.3rem;border:1px solid var(--gold);background:rgba(184,147,90,.08)"><div style="font-family:'Reenie Beanie',cursive;font-size:clamp(1.9rem,3.4vw,2.8rem);font-weight:300;font-style:italic;color:var(--gold);line-height:1.0">Personal<br>Readiness</div></div>
+      </div>
+      <p style="font-size:.95rem;line-height:1.85;opacity:.6;max-width:560px;margin:0 auto">Your credentials and your experience build the number inside the brackets. Personal Readiness is what multiplies it, or shrinks it. The Beta is that multiplier, made visible.</p>
+    </div>
+</section>
+
+
 <!-- ═══════════════ AREA 2 — INSIGHTS ═══════════════ -->
 <div class="area-divider" style="background:var(--paper);padding:6rem 3rem 3rem;text-align:center;border-top:1px solid rgba(10,10,8,.08)">
   <div class="area-num" style="font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem">Part Two</div>
   <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,5vw,3.5rem);font-weight:300;color:var(--ink);line-height:1.1">The <em style="color:var(--sage)">insights</em> we gained.</h2>
 </div>
+
+
 <!-- ── DASHBOARD ───────────────────────────────────────────────────────────── -->
 <section id="dashboard">
-  <div class="dashboard-header">
-    <div>
-      <div class="section-label reveal">02 — The Data</div>
-      <h2 class="dashboard-headline reveal reveal-delay-1">64,697 assessments.<br><em>One consistent story.</em></h2>
-    </div>
-    <p class="dashboard-sub reveal reveal-delay-2">Across three measurement generations, 15 years, and every major industry vertical, the same pattern repeats. Leaders enter below the performance threshold. TIGNUM moves them above it. The data is large enough, old enough, and diverse enough that the signal is no longer ambiguous.</p>
+  <div class="dashboard-header-single reveal">
+    <div class="section-label">04 — The Data</div>
+    <h2 class="dashboard-headline reveal-delay-1">64,697 assessments.<br><em>One consistent story.</em></h2>
   </div>
 
-  <div class="kpi-grid reveal">
-    <div class="kpi"><span class="kpi-value">82.6%</span><span class="kpi-label">Improved — engagement window<br>30–90 days</span></div>
-    <div class="kpi"><span class="kpi-value">91.5%</span><span class="kpi-label">Sub-threshold leaders improved<br>entered below β 1.0</span></div>
-    <div class="kpi"><span class="kpi-value">14.5%</span><span class="kpi-label">Average risk reduction<br>engagement window cohort</span></div>
-    <div class="kpi"><span class="kpi-value">2.5×</span><span class="kpi-label">Improvers outgain decliners<br>net beta movement</span></div>
+  <div class="insight-block reveal reveal-delay-2">
+    <p class="insight-lead">Twenty years of measuring readiness surfaced a few patterns that hold across industries, titles, and tenures.</p>
+    <div class="insight-patterns">
+      <div class="ip-item">
+        <div class="ip-num">01</div>
+        <div class="ip-head">Readiness is rarely where executives assume it is.</div>
+        <p>Many score strongly on one level and carry a hidden leak on another. The board-ready leader who quietly runs on empty by 4 PM is the rule, not the exception.</p>
+      </div>
+      <div class="ip-item">
+        <div class="ip-num">02</div>
+        <div class="ip-head">The most expensive risk is the invisible one.</div>
+        <p>Functional and Role Readiness are visible and well-managed. Personal Readiness sits in the blind spot, untracked, until it costs a decision, a relationship, or a critical moment.</p>
+      </div>
+      <div class="ip-item">
+        <div class="ip-num">03</div>
+        <div class="ip-head">The numbers move, and they move the business.</div>
+        <p>Across two decades of pre and post engagement data, our work reduced productivity leaks and created productivity gains.</p>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <div class="data-stats reveal">
+    <div class="ds-item"><span class="ds-num">2.8M</span><span class="ds-label">Data Points</span></div>
+    <div class="ds-item"><span class="ds-num">38,545</span><span class="ds-label">Leaders measured</span></div>
+    <div class="ds-item"><span class="ds-num">64,697</span><span class="ds-label">Assessments measured</span></div>
+    <div class="ds-item"><span class="ds-num">15</span><span class="ds-label">Years of data</span></div>
   </div>
 
   <!-- MAIN TREND CHART -->
@@ -483,48 +490,28 @@ footer span{font-size:1.0rem;letter-spacing:.1em;opacity:.3;color:var(--paper)}
 <section id="findings">
   <div class="findings-header">
     <div>
-      <div class="section-label reveal">03 — Key Findings</div>
+      <div class="section-label reveal">05 — Key Findings</div>
       <h2 class="findings-headline reveal reveal-delay-1">The data speaks <em>clearly.</em></h2>
     </div>
     <p class="reveal reveal-delay-2" style="font-size:1.04rem;line-height:1.9;opacity:.7;padding-top:3rem">Across 15 years, three assessment generations, and diverse geographies, the same signal repeats — at the level of the individual leader and the team — consistently enough to stake a decision on.</p>
   </div>
   <div class="why-grid">
-    <div class="why-card reveal" data-num="1">
-      <div class="why-card-tag">Engagement window · 30–90 days</div>
-      <div class="why-num">82.6%</div>
-      <div class="why-card-title">Of leaders improved in the engagement window</div>
-      <p class="why-card-body">When TIGNUM is actively engaged, 82.6% of leaders improved their Readiness Risk Score. Clean sample: 30-day minimum gap, noise removed, straight-line responses excluded. Pre β 1.060 → Post β 1.241. Risk reduction: 14.5%.</p>
-    </div>
+    
     <div class="why-card reveal reveal-delay-1" data-num="2">
       <div class="why-card-tag">Sub-threshold leaders</div>
       <div class="why-num rust">91.5%</div>
       <div class="why-card-title">Of at-risk leaders improved their score</div>
       <p class="why-card-body">Of leaders who entered below 1.0 — those representing the highest performance risk — 91.5% moved upward in the engagement window. Pre β 0.829 → Post β 1.088. The leaders who needed to move most, moved.</p>
     </div>
-    <div class="why-card reveal reveal-delay-2" data-num="3">
-      <div class="why-card-tag">15-year trend</div>
-      <div class="why-num gold">+14.5pp</div>
-      <div class="why-card-title">CM improved the most across all 15 years</div>
-      <p class="why-card-body">Critical Moments — the highest-weighted level — improved by +14.5 percentage points from 2011–2014 (avg 37%) to 2022–2026 (avg 52%). BP improved +10.5pp, DC improved +11.3pp. The most important dimension improved the most.</p>
-    </div>
-    <div class="why-card reveal reveal-delay-3" data-num="4">
-      <div class="why-card-tag">Population signal</div>
-      <div class="why-num sage">71.8%</div>
-      <div class="why-card-title">Improved across all 2,795 clean pre/post pairs</div>
-      <p class="why-card-body">Across all time windows and all three generations, 71.8% of leaders improved. Of the 28.2% who declined, 13.3% were already above threshold and remained above it — natural variation, not a risk signal. Net beta movement: 2.5× more upward than downward.</p>
-    </div>
+    
+    
       <div class="why-card reveal" data-num="5">
       <div class="why-card-tag">Teams entering below threshold</div>
       <div class="why-num rust">92%</div>
       <div class="why-card-title">Of at-risk teams improved</div>
       <p class="why-card-body">Teams are real coaching programs. Of those that entered below β 1.0 — the teams carrying the most risk — 92% improved, rising from 0.932 to 1.127 on average. The teams that needed to move most, moved.</p>
     </div>
-    <div class="why-card reveal reveal-delay-1" data-num="6">
-      <div class="why-card-tag">At-risk teams</div>
-      <div class="why-num sage">86%</div>
-      <div class="why-card-title">Crossed from diminishing to multiplying</div>
-      <p class="why-card-body">86% of the teams that entered below β 1.0 didn't just improve — they crossed the threshold entirely, moving from a net drain on performance to a net multiplier.</p>
-    </div>
+    
 </div>
 
   <div style="margin-top:4rem">
@@ -559,55 +546,51 @@ footer span{font-size:1.0rem;letter-spacing:.1em;opacity:.3;color:var(--paper)}
 </div>
 <!-- ── METHODOLOGY ─────────────────────────────────────────────────────────── -->
 <section id="methodology" style="background:var(--ink);color:var(--paper)">
-  <div class="section-label reveal">04 — Methodology</div>
-  <h2 class="section-headline reveal reveal-delay-1" style="max-width:600px">Five steps from answer to <em>Beta.</em></h2>
-  <p class="reveal reveal-delay-2" style="font-size:1.04rem;opacity:.6;line-height:1.8;max-width:520px;margin-top:1rem">The calculation is deterministic, transparent, and reproducible across all three assessment generations spanning 2011 to today.</p>
+  <div class="section-label reveal">06 — How It Works</div>
+  <h2 class="section-headline reveal reveal-delay-1" style="max-width:600px">Five steps, fully <em>tailored.</em></h2>
+  <p class="reveal reveal-delay-2" style="font-size:1.04rem;opacity:.6;line-height:1.8;max-width:520px;margin-top:1rem">The process is more systematic than most executives expect.</p>
   <div class="method-grid">
     <div class="steps">
-      <div class="step reveal"><div class="step-num">I</div><div>
-        <div class="step-title">Pillar Score</div>
-        <div class="step-formula">avg(answers per pillar)</div>
-        <p class="step-desc">Mean of all answers mapped to each Level × Pillar combination. Double-mapped questions contribute to both buckets independently.</p>
+      <div class="step reveal"><div class="step-num">1</div><div>
+        <div class="step-title">Baseline</div>
+        <p class="step-desc">The executive completes the assessment. Not a generic survey, a deep dive across Brain and Physiology, Daily Challenges, and Critical Moments.</p>
       </div></div>
-      <div class="step reveal reveal-delay-1"><div class="step-num">II</div><div>
-        <div class="step-title">Level Score</div>
-        <div class="step-formula">(M + N + Mv + R) / 4</div>
-        <p class="step-desc">Average of four pillar scores — Mindset, Nutrition, Movement, Recovery — for each level. All four carry equal weight within a level.</p>
+      <div class="step reveal reveal-delay-1"><div class="step-num">2</div><div>
+        <div class="step-title">Score and Beta</div>
+        <p class="step-desc">We normalize the results. Each level gets a readiness score, and the whole translates into a Personal Readiness Beta against the benchmark.</p>
       </div></div>
-      <div class="step reveal reveal-delay-2"><div class="step-num">III</div><div>
-        <div class="step-title">Overall Score</div>
-        <div class="step-formula">(1×BP + 2×DC + 3×CM) / 6</div>
-        <p class="step-desc">Weighted average. Critical Moments carries 3× weight. Divisor 6 is the sum of weights (1+2+3), keeping the result on the 1–5 scale.</p>
+      <div class="step reveal reveal-delay-2"><div class="step-num">3</div><div>
+        <div class="step-title">Read the risk</div>
+        <p class="step-desc">We pinpoint where readiness is leaking, and where it is already multiplying. This is the human performance risk, made specific.</p>
       </div></div>
-      <div class="step reveal reveal-delay-3"><div class="step-num">IV</div><div>
-        <div class="step-title">Raw Beta</div>
-        <div class="step-formula">Score / 2.5</div>
-        <p class="step-desc">Maps the 1–5 score onto a 0–2 beta axis. Score 1.0 → β 0.40. Score 2.5 → β 1.00. Score 5.0 → β 2.00.</p>
+      <div class="step reveal reveal-delay-3"><div class="step-num">4</div><div>
+        <div class="step-title">Recalibrate</div>
+        <p class="step-desc">A personalized plan, drawn from over 100 scientifically based strategies, delivered by our Performance Specialists.</p>
       </div></div>
-      <div class="step reveal reveal-delay-4"><div class="step-num">V</div><div>
-        <div class="step-title">Normalised Beta</div>
-        <div class="step-formula">Raw Beta × 0.9399</div>
-        <p class="step-desc">Anchored to the median of 38,686 pre-assessments (41.5% → Raw β 1.064 → × 0.9399 = 1.000). By definition, the median first-assessment beta equals 1.0. The threshold is derived from the data, not assumed.</p>
+      <div class="step reveal reveal-delay-3"><div class="step-num">5</div><div>
+        <div class="step-title">Re-measure</div>
+        <p class="step-desc">We prove the shift. The Beta moves, the leaks close, and the gain shows up in the moments that matter.</p>
       </div></div>
     </div>
     <div class="weights-col">
       <div class="weight-card reveal" data-weight="1×">
         <div class="weight-tag bp">Brain &amp; Physiology</div>
         <div class="weight-title">Foundational readiness — weight 1×</div>
-        <p class="weight-desc">Sleep, nutrition, movement, recovery habits. The biological substrate everything else runs on. Necessary but not sufficient — a leader can sleep well and still collapse under negotiation pressure.</p>
+        <p class="weight-desc">How resilient you are, how balanced your nervous system is, and what your level of pain and tension is. The foundation underneath everything else.</p>
       </div>
       <div class="weight-card reveal reveal-delay-1" data-weight="2×">
         <div class="weight-tag dc">Daily Challenges</div>
         <div class="weight-title">Operational readiness — weight 2×</div>
-        <p class="weight-desc">Performance under continuous load. How the leader shows up across the unrelenting sequence of decisions, meetings, and transitions that define the executive work day.</p>
+        <p class="weight-desc">How you handle mindset killers, how recharged and fueled you are, and how adaptable you stay across a demanding day.</p>
       </div>
       <div class="weight-card reveal reveal-delay-2" data-weight="3×">
         <div class="weight-tag cm">Critical Moments</div>
         <div class="weight-title">Peak performance capacity — weight 3×</div>
-        <p class="weight-desc">Readiness for high-stakes negotiations, board presentations, and decisions where the outcome disproportionately determines enterprise value. The moments that separate ordinary from extraordinary.</p>
+        <p class="weight-desc">How mentally agile you are, how focused you are, and how well you multiply energy when the stakes are highest.</p>
       </div>
     </div>
   </div>
+
   <!-- ALGORITHM DIAGRAM -->
   <div class="reveal" style="margin-top:5rem;overflow-x:auto">
     <div class="section-label" style="margin-bottom:2rem">Algorithm</div>
@@ -732,8 +715,6 @@ footer span{font-size:1.0rem;letter-spacing:.1em;opacity:.3;color:var(--paper)}
       <text x="76" y="668" font-size="7.5" font-family="'DM Mono',monospace" fill="#f5f2eb" opacity="0.25" letter-spacing="0.3">R = responses   S = overall score   c = conversion factor   β = normalised beta   η = normalisation factor   τ = threshold</text>
     </svg>
   </div>
-
-
 </section>
 
 
@@ -821,7 +802,7 @@ const YRS=[
   {y:2019,n:5312,  b:1.024,m:52.0,bp:53.4,dc:43.7,cm:39.5,s:'DB'},
   {y:2020,n:4195,  b:0.997,m:47.7,bp:51.8,dc:41.4,cm:38.0,s:'DB'},
   {y:2021,n:3551,  b:1.029,m:53.1,bp:53.2,dc:43.3,cm:40.4,s:'DB'},
-  {y:2022,n:1929,  b:1.161,m:75.2,bp:63.8,dc:51.8,cm:48.8,s:'DB'},
+  {y:2022,n:1929,  b:1.006,m:49.9,bp:54.5,dc:47.0,cm:44.9,s:'DB'},
   {y:2023,n:1101,  b:0.984,m:46.6,bp:55.8,dc:50.6,cm:49.4,s:'New Prindex'},
   {y:2024,n:1470,  b:1.001,m:50.3,bp:56.8,dc:52.0,cm:50.7,s:'New Prindex'},
   {y:2025,n:1313,  b:1.009,m:52.2,bp:57.9,dc:52.6,cm:51.3,s:'New Prindex'},
@@ -991,28 +972,52 @@ YRS.forEach(r=>{
   if(!wrap) return;
   var minB=0.72,maxB=1.45,span=maxB-minB;
   function pct(v){return (v-minB)/span*100;}
-  data.forEach(function(d){
+  data.forEach(function(d,idx){
     var row=document.createElement('div');
     row.style.cssText="margin-bottom:1rem";
+    var delay=(idx*0.12).toFixed(2);
     row.innerHTML='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'+
       '<span style="font-size:.85rem;font-weight:500;color:var(--ink)">'+d.n+' <span style="font-size:.7rem;opacity:.4;font-weight:400">'+d.e+'</span></span>'+
       '<span style="font-size:.72rem;opacity:.5">'+d.m+' members</span></div>'+
       '<div style="position:relative;height:20px;background:rgba(10,10,8,.05);border-radius:5px">'+
       '<div style="position:absolute;left:'+pct(1.0)+'%;top:-3px;bottom:-3px;width:1px;background:rgba(10,10,8,.3)"></div>'+
-      '<div style="position:absolute;left:'+pct(d.pre)+'%;width:'+(pct(d.post)-pct(d.pre))+'%;top:8px;height:4px;background:#4a5c4e;border-radius:2px"></div>'+
-      '<div style="position:absolute;left:calc('+pct(d.pre)+'% - 4px);top:6px;width:8px;height:8px;border-radius:50%;background:var(--paper);border:2px solid #8b3a2a"></div>'+
-      '<div style="position:absolute;left:calc('+pct(d.post)+'% - 5px);top:4px;width:10px;height:10px;border-radius:50%;background:#4a5c4e"></div>'+
+      '<div class="mv-bar" style="position:absolute;left:'+pct(d.pre)+'%;width:0%;top:8px;height:4px;background:#4a5c4e;border-radius:2px;transition:width 1s cubic-bezier(.4,0,.2,1) '+delay+'s" data-w="'+(pct(d.post)-pct(d.pre))+'"></div>'+
+      '<div style="position:absolute;left:calc('+pct(d.pre)+'% - 4px);top:6px;width:8px;height:8px;border-radius:50%;background:var(--paper);border:2px solid #8b3a2a;z-index:2"></div>'+
+      '<div class="mv-post" style="position:absolute;left:calc('+pct(d.pre)+'% - 5px);top:4px;width:10px;height:10px;border-radius:50%;background:#4a5c4e;z-index:3;transition:left 1s cubic-bezier(.4,0,.2,1) '+delay+'s" data-l="calc('+pct(d.post)+'% - 5px)"></div>'+
       '<span style="position:absolute;left:calc('+pct(d.pre)+'% - 2px);top:-17px;font-size:.66rem;color:#8b3a2a">'+d.pre.toFixed(2)+'</span>'+
-      '<span style="position:absolute;left:calc('+pct(d.post)+'% - 2px);bottom:-17px;font-size:.66rem;font-weight:500;color:#4a5c4e">'+d.post.toFixed(2)+'</span>'+
+      '<span class="mv-plabel" style="position:absolute;left:calc('+pct(d.pre)+'% - 2px);bottom:-17px;font-size:.66rem;font-weight:500;color:#4a5c4e;opacity:0;transition:left 1s cubic-bezier(.4,0,.2,1) '+delay+'s,opacity .5s ease '+(parseFloat(delay)+0.4).toFixed(2)+'s" data-l="calc('+pct(d.post)+'% - 2px)">'+d.post.toFixed(2)+'</span>'+
       '</div>';
     wrap.appendChild(row);
   });
+  // Animate when scrolled into view
+  function playMovers(){
+    wrap.querySelectorAll('.mv-bar').forEach(function(el){el.style.width=el.getAttribute('data-w')+'%';});
+    wrap.querySelectorAll('.mv-post').forEach(function(el){el.style.left=el.getAttribute('data-l');});
+    wrap.querySelectorAll('.mv-plabel').forEach(function(el){el.style.left=el.getAttribute('data-l');el.style.opacity='1';});
+  }
+  if('IntersectionObserver' in window){
+    var mo=new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if(en.isIntersecting){ playMovers(); mo.disconnect(); } });
+    },{threshold:0.25});
+    mo.observe(wrap);
+  } else { playMovers(); }
   var lg=document.createElement('div');
   lg.style.cssText="margin-top:1.5rem;font-size:.72rem;opacity:.5;display:flex;gap:16px;flex-wrap:wrap";
   lg.innerHTML='<span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--paper);border:2px solid #8b3a2a;margin-right:4px"></span>Pre (entered below 1.0)</span>'+
     '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#4a5c4e;margin-right:4px"></span>Post (crossed to multiplying)</span>'+
     '<span>vertical line = β 1.0 threshold</span>';
   wrap.appendChild(lg);
+})();
+</script>
+
+<script>
+(function(){
+  var sg=document.querySelector('.scale-graph');
+  if(!sg) return;
+  if('IntersectionObserver' in window){
+    var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){sg.classList.add('animate');o.disconnect();}});},{threshold:0.3});
+    o.observe(sg);
+  } else { sg.classList.add('animate'); }
 })();
 </script>
 </body>
